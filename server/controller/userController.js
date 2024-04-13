@@ -125,7 +125,7 @@ const userregister = async (req, res) => {
 
         await Otpcollecti.save();
 
-        res.render('otp')
+        res.render('otp', { email });
 
     } catch (error) {
         console.log(error)
@@ -136,29 +136,27 @@ const userregister = async (req, res) => {
 const verifyLogin = async (req, res) => {
     try {
         const email = req.body.email;
-      
         const password = req.body.password;
 
         const userData = await User.findOne({ email: email });
 
-       
-        
         if (userData) {
-            console.log("1")
-            // const passwordMatch = await bcrypt.compare(password, userData.password);
-            if (password == userData.password) {
-            req.session.UserId = userData._id
+           
+            const passwordMatch = await bcrypt.compare(password, userData.password);
+            if (passwordMatch) {
+                req.session.UserId = userData._id;
                 res.redirect('/home');
             } else {
-                console.log("Incorrect password ")
-                res.render('register', { message: "Password are incorrect" });
+                console.log("Incorrect password");
+                res.render('login', { message: "Incorrect password" });
             }
         } else {
-            res.render('register', { message: 'Email are incorrect' })
+            console.log("User not found");
+            res.render('login', { message: 'Email not found' });
         }
-
     } catch (error) {
-        console.log(error)
+        console.log(error);
+        res.render('error', { message: 'An error occurred' });
     }
 }
 
@@ -217,27 +215,18 @@ function sendOtp(email, Otp) {
 const Otpverify = async (req, res) => {
     try {
         const Otp = req.body.Otp;
-        console.log('otpp', Otp)
-        console.log("Email", req.session.email)
-        // let data = await User.findOne({email:re})
+       
+        let email=req.body.email
 
-        const Otpverification = await OTPP.findOne({ email: req.session.email });
-        console.log("otpss", Otpverification);
+        const Otpverification = await OTPP.findOne({ email: req.body.email });
 
+        
         if (Otp == Otpverification.OTP) {
+            const userid = await User.updateOne({ email: req.body.email }, { is_Verified: 1 });
 
-            const user = new User({
-                name: req.session.name,
-                email: req.session.email,
-                mobile: req.session.mobile,
-                password: req.session.password,
-                conformpassword: req.session.password
-            })
-           
-            user.save()
-            // req.session.userId = data._id
+            console.log(userid,"whfwdiuwbhdwiduwdi  ")
 
-            const usersession = await User.findOne({email:req.session.email});
+            const usersession = await User.findOne({email:req.body.email});
             req.session.userId = usersession._id 
 
             console.log()
@@ -246,7 +235,7 @@ const Otpverify = async (req, res) => {
             await OTPP.deleteMany({})
         } else {
 
-            res.render('otp', { message: "Otp incorrect" });
+            res.render('otp', { message: "Otp incorrect" },{email});
         }
 
 
@@ -329,6 +318,21 @@ const Myprofile = async(req, res) => {
     }
 };
 
+const EditProfile = async (req, res) => {
+    try {
+        const userId = req.session.UserId; 
+        const { name, email } = req.body;
+
+
+        await User.findByIdAndUpdate(userId, { name }, { new: true });
+
+        
+        res.redirect('/profile');
+    } catch (error) {
+        console.log(error.message)
+    }
+}
+
 
 
 
@@ -348,5 +352,6 @@ module.exports = {
     singleproductdetails,
     afterlogin,
     logout ,
-    Myprofile
+    Myprofile,
+    EditProfile
 }

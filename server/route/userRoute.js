@@ -12,6 +12,7 @@ const userController = require('../controller/userController')
 const userauth = require("../midlewares/usersession")
 const addressController = require('../controller/addressController')
 
+const cartController = require('../controller/cartController')
 
 user_route.set('views','./views/users');
 
@@ -27,7 +28,7 @@ user_route.post('/register',userController.userregister)
 user_route.post('/loginverification',userController.verifyLogin)
  
 
-user_route.post('/otp',userController.  Otpverify)
+user_route.post('/otp',userController.Otpverify)
 
 user_route.post('/resend',userController.resendotp)
 
@@ -42,6 +43,14 @@ user_route.get('/profile',userauth.isLogin,userController.Myprofile)
 user_route.post('/addaddress',addressController.useraddress)
 
 user_route.get('/editaddress',addressController.Editaddress)
+
+user_route.get('/deleteaddress',addressController.deleteaddress)
+
+user_route.get('/cart',userauth.isLogout,cartController.loadcart)
+
+user_route.post('/profile',userController.EditProfile)
+
+user_route.post('/editaddress',addressController.Editaddress)
 
 
 

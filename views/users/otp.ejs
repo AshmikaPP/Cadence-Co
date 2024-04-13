@@ -252,6 +252,7 @@
        
         
             <form id="otpForm" action="/otp" method="post">
+                <input type="hidden" name="email" id="email" value="<%=email%>">
                 <div id="timer"></div>
                 <label for="otp">OTP:</label>
                 <input type="text" id="otp" name="Otp" placeholder="Enter OTP" required><br><br>
