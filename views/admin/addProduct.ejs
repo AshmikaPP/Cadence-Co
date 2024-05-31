@@ -54,6 +54,36 @@
                             <span class="text">User list</span>
                         </a>
                     </li>
+                    <li class="menu-item active">
+                        <a class="menu-link" href="/orderDatas">
+                            <i class="icon material-icons md-shopping_cart"></i>
+                            <span class="text">Orders</span>
+                        </a>
+                        
+                    </li>
+                    <li class="menu-item">
+                        <a class="menu-link"  href="/loadCoupon">
+                            <i class="icon material-icons md-pie_chart"></i>
+                            <span class="text">Coupon</span>
+                        </a>
+                    </li>
+                    <li class="menu-item has-submenu">
+                        <a class="menu-link" href="/loadOffer">
+                            <i class="icon material-icons md-monetization_on"></i>
+                            <span class="text">Offers</span>
+                        </a>
+                        <!-- <div class="submenu">
+                            <a href="page-transactions-1.html">Transaction 1</a>
+                            <a href="page-transactions-2.html">Transaction 2</a>
+                        </div> -->
+                    </li>
+                    <li class="menu-item has-submenu ">
+                        <a class="menu-link" href="/Salesreport">
+                            <i class="icon material-icons md-store"></i>
+                            <span class="text">Salesreport</span>
+                        </a>
+
+                    </li>
                    
                     <!-- <li class="menu-item has-submenu"> -->
                         <!-- <a class="menu-link" href="page-orders-1.html">
@@ -382,78 +412,90 @@
 
         <script>
             function validateForm() {
-                const name = document.getElementById('product_name').value.trim();
-                const description = document.getElementById('description').value.trim();
-                const price = document.getElementById('price').value.trim();
-                const stock = document.getElementById('stock').value.trim();
-                const imageFiles = document.getElementById('image').files;
-        
-                const nameError = document.getElementById('nameError');
-                const descriptionError = document.getElementById('descriptionError');
-                const priceError = document.getElementById('priceError');
-                const stockError = document.getElementById('stockError');
-                const imageError = document.getElementById('imageError');
-                const categoryError = document.getElementById('categoryError');
-        
-                nameError.textContent = '';
-                descriptionError.textContent = '';
-                priceError.textContent = '';
-                stockError.textContent = '';
-                imageError.textContent = '';
-                categoryError.textContent = '';
-        
-                if (name === '') {
-                    nameError.textContent = 'Product title is required.';
-                    return false;
-                }
-        
-                if (description === '') {
-                    descriptionError.textContent = 'Full description is required.';
-                    return false;
-                }
-        
-                if (price === '') {
-                    priceError.textContent = 'Price is required.';
-                    return false;
-                }
-        
-                if (isNaN(price) || parseFloat(price) <= 0) {
-                    priceError.textContent = 'Price must be a positive number.';
-                    return false;
-                }
-        
-                if (stock === '') {
-                    stockError.textContent = 'Stock is required.';
-                    return false;
-                }
-        
-                if (isNaN(stock) || parseInt(stock) <= 0) {
-                    stockError.textContent = 'Stock must be a positive integer.';
-                    return false;
-                }
-        
-                if (imageFiles.length === 0) {
-                    imageError.textContent = 'Please select at least one image.';
-                    return false;
-                }
-        
-                for (let i = 0; i < imageFiles.length; i++) {
-                    const fileName = imageFiles[i].name;
-                    const ext = fileName.split('.').pop().toLowerCase();
-                    if (!['jpg', 'jpeg', 'png', 'gif', 'bmp', 'tiff', 'webp'].includes(ext)) {
-                        imageError.textContent = 'Invalid image file format. Allowed formats: JPG, JPEG, PNG, GIF, BMP, TIFF, WEBP.';
-                        return false;
-                    }
-                }
-        
-                const selectedCategory = document.getElementById('exampleInputCity1').value;
-                if (selectedCategory === '') {
-                    categoryError.textContent = 'Please select a category.';
-                    return false;
-                }
-        
-                return true;
-            }
+    const name = document.getElementById('product_name').value.trim();
+    const description = document.getElementById('description').value.trim();
+    const price = document.getElementById('price').value.trim();
+    const stock = document.getElementById('stock').value.trim();
+    const imageFiles = document.getElementById('image').files;
+
+    const nameError = document.getElementById('nameError');
+    const descriptionError = document.getElementById('descriptionError');
+    const priceError = document.getElementById('priceError');
+    const stockError = document.getElementById('stockError');
+    const imageError = document.getElementById('imageError');
+    const categoryError = document.getElementById('categoryError');
+
+    nameError.textContent = '';
+    descriptionError.textContent = '';
+    priceError.textContent = '';
+    stockError.textContent = '';
+    imageError.textContent = '';
+    categoryError.textContent = '';
+
+    if (name === '') {
+        nameError.textContent = 'Product title is required.';
+        return false;
+    }
+
+    if (description === '') {
+        descriptionError.textContent = 'Full description is required.';
+        return false;
+    }
+
+    if (price === '') {
+        priceError.textContent = 'Price is required.';
+        return false;
+    }
+
+    if (isNaN(price) || parseFloat(price) <= 0) {
+        priceError.textContent = 'Price must be a positive number.';
+        return false;
+    }
+
+    if (stock === '') {
+        stockError.textContent = 'Stock is required.';
+        return false;
+    }
+
+    if (isNaN(stock) || parseInt(stock) <= 0) {
+        stockError.textContent = 'Stock must be a positive integer.';
+        return false;
+    }
+
+    // New validation for ensuring both price and stock are greater than zero
+    if (parseFloat(price) <= 0) {
+        priceError.textContent = 'Price must be greater than zero.';
+        return false;
+    }
+
+    if (parseInt(stock) <= 0) {
+        stockError.textContent = 'Stock must be greater than zero.';
+        return false;
+    }
+
+    if (imageFiles.length === 0) {
+        imageError.textContent = 'Please select at least one image.';
+        return false;
+    }
+
+    for (let i = 0; i < imageFiles.length; i++) {
+        const fileName = imageFiles[i].name;
+        const ext = fileName.split('.').pop().toLowerCase();
+        if (!['jpg', 'jpeg', 'png', 'gif', 'bmp', 'tiff', 'webp'].includes(ext)) {
+            imageError.textContent = 'Invalid image file format. Allowed formats: JPG, JPEG, PNG, GIF, BMP, TIFF, WEBP.';
+            return false;
+        }
+    }
+
+    const selectedCategory = document.getElementById('exampleInputCity1').value;
+    if (selectedCategory === '') {
+        categoryError.textContent = 'Please select a category.';
+        return false;
+    }
+
+    return true;
+}
+
         </script>
         
         

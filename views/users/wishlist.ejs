@@ -99,7 +99,7 @@
                             <div class="main-menu text-center">
                                 <nav>
                                     <ul>
-                                        <li><a href="index.html">HOME</a>
+                                        <li><a href="/">HOME</a>
                                             <ul class="sub-menu-style">
                                                 <li><a href="index.html">Home version 1 </a></li>
                                                 <li><a href="index-2.html">Home version 2</a></li>
@@ -111,7 +111,7 @@
                                                 <li><a href="index-8.html">Home version 8</a></li>
                                             </ul>
                                         </li>
-                                        <li><a href="shop.html">SHOP</a>
+                                        <li><a href="/shop">SHOP</a>
                                             <ul class="mega-menu-style mega-menu-mrg-1">
                                                 <li>
                                                     <ul>
@@ -275,58 +275,50 @@
                                     <table>
                                         <thead>
                                             <tr>
-                                                <th class="width-remove"></th>
+                                               
                                                 <th class="width-thumbnail"></th>
                                                 <th class="width-name">Product</th>
-                                                <th class="width-price"> Unit price </th>
+                                                <th class="width-price">  </th>
                                                 <th class="width-stock-status"> Stock status </th>
                                                 <th class="width-wishlist-cart"></th>
+                                                
+                                                <th class="width-delete"> Delete </th>
+                                                
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <tr>
-                                                <td class="product-remove"><a href="#">×</a></td>
-                                                <td class="product-thumbnail">
-                                                    <a href="product-details.html"><img src="assets/images/cart/cart-1.jpg" alt=""></a>
-                                                </td>
-                                                <td class="product-name">
-                                                    <h5><a href="product-details.html">Stylish Swing Chair</a></h5>
-                                                </td>
-                                                <td class="product-wishlist-price"><span class="amount">$120.00</span></td>
-                                                <td class="stock-status">
-                                                    <span><i class="las la-check"></i> In Stock</span>
-                                                </td>
-                                                <td class="wishlist-cart btn-hover"><a href="#">Add to Cart</a></td>
-                                            </tr>
-                                            <tr>
-                                                <td class="product-remove"><a href="#">×</a></td>
-                                                <td class="product-thumbnail">
-                                                    <a href="product-details.html"><img src="assets/images/cart/cart-2.jpg" alt=""></a>
-                                                </td>
-                                                <td class="product-name">
-                                                    <h5><a href="product-details.html">Modern Lounge Chairs</a></h5>
-                                                </td>
-                                                <td class="product-wishlist-price"><span class="amount">$120.00</span></td>
-                                                <td class="stock-status">
-                                                    <span><i class="las la-check"></i> In Stock</span>
-                                                </td>
-                                                <td class="wishlist-cart btn-hover"><a href="#">Add to Cart</a></td>
-                                            </tr>
-                                            <tr>
-                                                <td class="product-remove"><a href="#">×</a></td>
-                                                <td class="product-thumbnail">
-                                                    <a href="product-details.html"><img src="assets/images/cart/cart-3.jpg" alt=""></a>
-                                                </td>
-                                                <td class="product-name">
-                                                    <h5><a href="product-details.html">Modern Swivel Chair</a></h5>
-                                                </td>
-                                                <td class="product-wishlist-price"><span class="amount">$120.00</span></td>
-                                                <td class="stock-status">
-                                                    <span><i class="las la-check"></i> In Stock</span>
-                                                </td>
-                                                <td class="wishlist-cart btn-hover"><a href="#">Add to Cart</a></td>
-                                            </tr>
+                                            <% if (wishlist && wishlist.length > 0) { %>
+                                                <% wishlist.forEach((wish) => { %>
+                                                    <% if (wish.product && wish.product.length > 0) { %>
+                                                        <% wish.product.forEach((product) => { %>
+                                                            <tr>
+                                                                
+                                                                <td class="product-thumbnail">
+                                                                    <a href="product-details.html"><img src="uploads/product/<%=product.productId.image[0]%>" alt=""></a>
+                                                                </td>
+                                                                <td><%= product.productId.name %></td>
+                                                                <td class="wishlist-cart btn-hover"><a href="#" onclick="addTocart('<%=product.productId._id %>', '<%=product.productId.name %>',' <%=product.productId.price %>', '<%=product.productId.category %>')">Add to Cart</a></td>
+                                                                <td>
+                                                                    <span><%= (product.productId.quantity == 0) ? "Out Of Stock":"Stock Is Available"%></span>
+                                                                </td>
+                                                                <td></td>
+                                                                <td class="product-remove"><a href="/remove?id=<%=product.productId._id%>"><i class="ti-trash"></i></a></td>
+                                                            </tr>
+                                                        <% }) %>
+                                                    <% } else { %>
+                                                        <tr>
+                                                            <td colspan="4">No items in wishlist</td>
+                                                        </tr>
+                                                    <% } %>
+                                                <% }) %>
+                                            <% } else { %>
+                                                <tr>
+                                                    <td colspan="4">No items in wishlist</td>
+                                                </tr>
+                                            <% } %>
                                         </tbody>
+                                        
+                                        
                                     </table>
                                 </div>
                             </div>
@@ -568,6 +560,66 @@
             </div>
         </div>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+    <script>
+       function addTocart(productId, name, price, category) {
+        console.log("1111111111111111111111111111111111111111111111111111111111111");
+    console.log(productId);
+    console.log("edwdew", productId, name, price, category);
+            
+
+            Swal.fire({
+                icon:'question',
+                title:'Add to Cart',
+                text:`Do you want to add ${name} to your cart?`,
+                showCancelButton :true,
+                confirmButtonText:'Yes',
+                cancelButtonText:'No',
+            }).then((result)=>{
+                if(result.isConfirmed){
+                    fetch('/Add-to-cart',{
+                        method:'POST',
+                        headers:{
+                            'Content-Type':'application/json',
+                        },
+                        body: JSON.stringify({
+                          productId,
+                         
+                        }),
+                    }).then(response=>response.json())
+                    .then(data=>{
+                        if(data.success===false){
+                            Swal.fire({
+                                icon:'info',
+                                title:'Info',
+                                text:data.message,
+                            });
+                        }else{
+                            Swal.fire({
+                                icon:'success',
+                                title:'Added to cart!',
+                                text:`${name} has been added to your cart.`,
+                                showConfirmButton:false
+                            });
+                        }
+                    })
+                    .catch(error=>{
+                        console.error('Error adding to cart:',error);
+
+                        Swal.fire({
+                            icon:'error',
+                            title:'Error',
+                            text: 'Failed to add the item to the cart. Please try again.',
+                        });
+                    });
+                }else{
+
+                }
+            });
+        }
+
+        
+    </script>
     <!-- All JS is here -->
     <script src="assets/js/vendor/modernizr-3.11.7.min.js"></script>
     <script src="assets/js/vendor/jquery-3.6.0.min.js"></script>

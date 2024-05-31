@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Edit User Information</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        margin: 0;
+        padding: 0;
+    }
+
+    .container {
+        max-width: 600px;
+        margin: 20px auto;
+        padding: 20px;
+        background-color: #fff;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    h2 {
+        text-align: center;
+        color: #333;
+    }
+
+    form {
+        margin-top: 20px;
+    }
+
+    label {
+        display: block;
+        margin-bottom: 5px;
+        color: #666;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="tel"],
+    textarea {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        box-sizing: border-box;
+    }
+
+    textarea {
+        resize: vertical;
+    }
+
+    input[type="submit"] {
+        width: 100%;
+        padding: 10px;
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    input[type="submit"]:hover {
+        background-color: #0056b3;
+    }
+
+        .error-message {
+            color: red;
+            font-size: 0.875em;
+        }
+
+   
+</style>
+</head>
+<body>
+<div class="container">
+    <h2>Edit User Information</h2>
+    <form id="addressForm" action="/editaddress" method="POST">
+        <label for="fname">First Name:</label>
+        <input type="text" id="fname" name="fname" value="<%= addressData.fname %>" required>
+        <div id="fnameError" class="error-message"></div>
+
+        <input type="hidden" name="id" value="<%= addressData._id %>">
+
+        <label for="lname">Last Name:</label>
+        <input type="text" id="lname" name="lname" value="<%= addressData.lname %>" required>
+        <div id="lnameError" class="error-message"></div>
+        
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" value="<%= addressData.email %>" required>
+        <div id="emailError" class="error-message"></div>
+        
+        <label for="address">Address:</label>
+        <textarea id="address" name="address" rows="4" cols="50" required><%= addressData.address %></textarea>
+        <div id="addressError" class="error-message"></div>
+        
+        <label for="mobile">Mobile Number:</label>
+        <input type="tel" id="mobile" name="mobile" value="<%= addressData.mobile %>" pattern="[0-9]{10}" required>
+        <div id="mobileError" class="error-message"></div>
+        
+        <label for="place">Place:</label>
+        <input type="text" id="place" name="place" value="<%= addressData.place %>" required>
+        <div id="placeError" class="error-message"></div>
+        
+        <label for="pin">PIN:</label>
+        <input type="text" id="pin" name="pin" value="<%= addressData.pin %>" pattern="[0-9]{6}" required>
+        <div id="pinError" class="error-message"></div>
+        
+        <input type="submit" value="Submit">
+    </form>
+    <div id="error-container" class="error-message"></div>
+</div>
+
+     
+    <script>
+        document.addEventListener('DOMContentLoaded', (event) => {
+            const form = document.getElementById('addressForm');
+        
+            form.addEventListener('submit', function (e) {
+                e.preventDefault(); // Prevent form submission
+        
+                // Clear previous error messages
+                document.querySelectorAll('.error-message').forEach(el => el.textContent = '');
+        
+                let isValid = true;
+        
+                // Validate First Name
+                const fname = document.getElementById('fname');
+                if (fname.value.trim() === '') {
+                    document.getElementById('fnameError').textContent = 'First Name is required';
+                    isValid = false;
+                }
+        
+                // Validate Last Name
+                const lname = document.getElementById('lname');
+                if (lname.value.trim() === '') {
+                    document.getElementById('lnameError').textContent = 'Last Name is required';
+                    isValid = false;
+                }
+        
+                // Validate Email
+                const email = document.getElementById('email');
+                const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+                if (email.value.trim() === '') {
+                    document.getElementById('emailError').textContent = 'Email is required';
+                    isValid = false;
+                } else if (!emailPattern.test(email.value)) {
+                    document.getElementById('emailError').textContent = 'Invalid email address';
+                    isValid = false;
+                }
+        
+                // Validate Address
+                const address = document.getElementById('address');
+                if (address.value.trim() === '') {
+                    document.getElementById('addressError').textContent = 'Address is required';
+                    isValid = false;
+                }
+        
+                // Validate Mobile
+                const mobile = document.getElementById('mobile');
+                const mobilePattern = /^[6-9]\d{9}$/;
+                if (mobile.value.trim() === '') {
+                    document.getElementById('mobileError').textContent = 'Mobile number is required';
+                    isValid = false;
+                } else if (!mobilePattern.test(mobile.value)) {
+                    document.getElementById('mobileError').textContent = 'Invalid mobile number';
+                    isValid = false;
+                }
+        
+                // Validate Place
+                const place = document.getElementById('place');
+                if (place.value.trim() === '') {
+                    document.getElementById('placeError').textContent = 'Place is required';
+                    isValid = false;
+                }
+        
+                // Validate PIN
+                const pin = document.getElementById('pin');
+                if (pin.value.trim() === '') {
+                    document.getElementById('pinError').textContent = 'PIN is required';
+                    isValid = false;
+                } else if (!/^\d{6}$/.test(pin.value)) {
+                    document.getElementById('pinError').textContent = 'Invalid PIN';
+                    isValid = false;
+                }
+        
+                // If all validations pass, submit the form
+                if (isValid) {
+                    form.submit();
+                }
+            });
+        });
+    
+</script>
+</body>
+</html>
+
+
+
+

@@ -6,12 +6,16 @@ const fs = require('fs')
 
 
 const product = require('../model/productModel');
+const Order = require('../model/orderModel');
+const Offer = require('../model/offerModel')
+
 
 
 
 
 const sharp = require('sharp');
 const path = require('path');
+const { log } = require('console');
 
 const loadLogin = async (req, res) => {
     try {
@@ -45,6 +49,7 @@ const verifyLogin = async (req, res) => {
         if (userData) {
             if (password == userData.password ) {
                 req.session.admin=userData._id
+                console.log();
                 res.redirect('/dashboard');
             } else {
                 // console.log("incorrect password")
@@ -64,10 +69,11 @@ const verifyLogin = async (req, res) => {
 const LoadCategory = async (req, res) => {
     try {
         const Category = await category.find()
+        const offers = await Offer.find();
         console.log("yfjjy", Category);
         console.log("vuhkjml",);
 
-        res.render("category", { Category })
+        res.render("category", { Category,offers })
     } catch (error) {
         console.log(error.message)
     }
@@ -217,9 +223,11 @@ const posteditcategory = async (req, res) => {
 
 const Loadproduct = async (req,res)=>{
     try {
-        const Product = await product.find()
+        const Product = await product.find().populate("category")
+        const offers = await Offer.find()
+        console.log(Product,"category name from the product")
 
-        res.render("product",{ Product })
+        res.render("product",{ Product,offers})
     } catch (error) {
         console.log(error.message)
     }
@@ -235,7 +243,7 @@ const LoadAddProduct= async (req,res)=>{
        
         res.render("addProduct",{categorydata})
         
-    } catch (error) {
+    } catch (error) {   
         console.log(error.message)
     }
 }
@@ -292,6 +300,9 @@ const Addproduct = async (req, res) => {
         const existingProduct = await product.findOne({ name:req.body.name });
         const categorydata= await category.find({is_Listed:true});
         const { name, description, price, stock, edit, categories} = req.body;
+        console.log("categories froom product",req.body.categories);
+        const existcategory = await category.findOne({name:categories})
+        console.log("the existcategory",existcategory)
         const imageUrls = [];
          if(!req.files || req.files.length !== 4){
             return res.render("addProduct",{
@@ -322,10 +333,11 @@ const Addproduct = async (req, res) => {
                 description: description,
                 price: price,
                 stock: stock,
-                category: categories,
+                category:existcategory._id,
                 image: imageUrls
             });
 
+            console.log("the new added product ",newProduct)
             await newProduct.save();
             
             console.log(`New product ${name} added.`);
@@ -520,6 +532,154 @@ const logout = async (req,res)=>{
     }
 }
 
+const orderList = async(req,res)=>{
+    try {
+        const userId = req.session.admin;
+        console.log(userId);
+        const orderData = await Order.find()
+        console.log(orderData,"ooooooooooooooooooo");
+        res.render("orderDetails",{orderData})
+    } catch (error) {
+        console.log(error.message)
+    }
+}
+
+const orderViewdatas = async(req,res)=>{
+    try {
+        const userId = req.session.admin;
+        const id = req.query.id;
+        const orderViewdetails = await Order.findOne({ _id: id })
+        res.render("orderViewdetails",{orderViewdetails})
+    } catch (error) {
+        console.log(error.message)
+    }
+}
+
+
+const Statusreturn = async(req,res)=>{
+   try {
+    
+    const returnStatus = await Order.findOneAndUpdate(
+        { _id: req.body.orderId }, 
+        { status: req.body.status }, 
+        { new: true } 
+    );
+    res.json({ success: true});
+
+
+   } catch (error) {
+    console.log(error.message)
+   }
+}
+
+const salesReport = async (req, res) => {
+    try {
+        console.log(req.query,"yyyyyyyyyyyyyyyyyyyyyy")
+        const lateDate = new Date("2024-01-26");
+
+      
+        const endDate = new Date();
+
+       
+        const orders = await Order.find({
+            status: "Delivered",
+            date: {
+                $gte: lateDate,
+                $lte: endDate
+            }
+        }).sort({ date: -1 });
+
+        console.log("Fetched Orders: ", orders);
+        res.render("salesreport", { orders: orders });
+    } catch (error) {
+        console.error("Error fetching sales report: ", error.message);
+        res.status(500).send("Internal Server Error");
+    }
+};
+
+
+const salesReportPost = async (req, res) => {
+    try {
+       console.log('111111111111111111111111111111111',req.body);
+       const startDate = req.body.startDate
+       const endDate = req.body.endDate
+        const orders = await Order.find({
+            status: "Delivered",
+            date: {
+                $gte: startDate,
+                $lte: endDate
+            }
+        }).sort({ date: -1 });
+
+        console.log("Fetched Orders: ", orders);
+        res.render("salesreport", { orders: orders });
+    } catch (error) {
+        console.error("Error fetching sales report: ", error.message);
+        res.status(500).send("Internal Server Error");
+    }
+};
+
+const salesReportFilter = async (req, res) => {
+    try {
+        const selected = req.body.selected;
+        let startDate, endDate;
+
+        // Get today's date without the time component
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        // Determine start and end dates based on selected option
+        switch (selected) {
+            case 'Today':
+                startDate = today;
+                endDate = new Date(today); // Copy today's date
+                endDate.setDate(endDate.getDate() + 1); // End date is the next day
+                break;
+            case 'This Week':
+                startDate = new Date();
+                startDate.setDate(startDate.getDate() - 6); // Start from past 6 days
+                endDate = new Date(); // Today
+                break;
+            case 'This Month':
+                startDate = new Date();
+                startDate.setDate(1); // Start from the 1st day of the current month
+                endDate = new Date(); // Today
+                break;
+            case 'This Year':
+                startDate = new Date();
+                startDate.setMonth(0); // Start from January
+                startDate.setDate(1); // Start from the 1st day of January
+                endDate = new Date(); // Today
+                break;
+            case 'Custom Date Range':
+                // Handle custom date range separately
+                // You can extract start and end dates from req.body accordingly
+                break;
+            default:
+                // Handle default case
+        }
+
+        // Query orders based on the determined start and end dates
+        const orders = await Order.find({
+            status: "Delivered",
+            date: {
+                $gte: startDate,
+                $lte: endDate
+            }
+        }).sort({ date: -1 });
+
+        // Render the sales report with filtered orders
+        res.render("salesreport", { orders: orders });
+    } catch (error) {
+        console.error("Error filtering sales report: ", error.message);
+        res.status(500).send("Internal Server Error");
+    }
+};
+
+
+
+
+
 
 
 module.exports = {
@@ -547,6 +707,13 @@ module.exports = {
     deleteimage,
     deleteproduct,
     logout,
+    orderList,
+    orderViewdatas,
+    Statusreturn,
+    salesReport,
+    salesReportPost,
+    salesReportFilter 
+   
 
 
     

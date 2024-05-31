@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Details</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            padding: 20px;
+            margin: 0;
+            box-sizing: border-box;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        h2 {
+            color: #555;
+            margin-top: 30px;
+        }
+        .address {
+            margin-bottom: 30px;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+        }
+        .product {
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid #ccc;
+            padding: 10px 0;
+        }
+        .product img {
+            max-width: 80px;
+            max-height: 80px;
+            border-radius: 5px;
+            margin-right: 20px;
+        }
+        .product-details {
+            flex-grow: 1;
+        }
+        .product h3 {
+            color: #333;
+            margin: 5px 0;
+        }
+        .product p {
+            color: #666;
+            margin: 5px 0;
+        }
+        .button-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .button {
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            padding: 15px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        .button:hover {
+            background-color: #45a049;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Order Details</h1>
+
+        <h2>Customer Address:</h2>
+        <div class="address">
+            <!-- Insert customer address dynamically here -->
+            <p><%=orderDetails.deliveryDetails.fname%></p>
+            <p><%=orderDetails.deliveryDetails.lname%></p>
+            <p><%=orderDetails.deliveryDetails.email%></p>
+            <p><%=orderDetails.deliveryDetails.mobile%></p>
+            <p><%=orderDetails.deliveryDetails.address%></p>
+            <p><%=orderDetails.deliveryDetails.place%></p>
+            <p><%=orderDetails.deliveryDetails.pin%></p>
+        </div>
+
+        <h2>Product Details:</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Product Name</th>
+                    <th>price</th>
+                    <th>Quantity</th>
+                    <th>total</th>
+                    
+                </tr>
+            </thead>
+            <tbody>
+                <% for(let i = 0; i < orderDetails.product.length; i++) { %>
+                    <tr>
+                        <td>
+                            <img src="uploads/product/<%=orderDetails.product[i].image[0]%>" alt="Product Image" style="width: 100px;height: 100px;">                            
+                        </td>
+                        <td><%= orderDetails.product[i].name %></td>
+                        <td><%= orderDetails.product[i].price / orderDetails.product[i].quantity %></td>
+                        <td><%= orderDetails.product[i].quantity %></td>
+                        <td><%= orderDetails.product[i].price %></td>
+                        
+                        
+                        
+                    </tr>
+                <% } %>
+                
+            </tbody>
+            
+        </table>
+
+        <div class="your-order-info order-subtotal">
+            <ul>
+                <input type="hidden" id="totalAmount" value="<%= orderDetails.subtotal %>">
+                <li><strong>Subtotal:</strong> <span><strong>$<%= orderDetails.subtotal %></strong></span></li>
+            </ul>
+        </div>
+        <td>
+            <% if (orderDetails.status === 'Delivered') { %>
+                <a href="/changeOrderstatus?orderId=<%= orderDetails._id %>&status=Return">Return</a>
+
+            <% } else if (orderDetails.status === 'processing' || orderDetails.status === 'placed' || orderDetails.status === 'pending') { %>
+                <a href="/changeOrderstatus?orderId=<%= orderDetails._id %>&status=Cancel">Cancel</a>
+            <% } %>
+        </td>
+        
+        
+
+        
+    </div>
+</body>
+</html>
+
+
+

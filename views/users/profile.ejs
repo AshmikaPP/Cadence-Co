@@ -158,7 +158,7 @@ button[type="submit"]:hover {
                             <div class="main-menu text-center">
                                 <nav>
                                     <ul>
-                                        <li><a href="index.html">HOME</a>
+                                        <li><a href="/">HOME</a>
                                             <ul class="sub-menu-style">
                                                 <li><a href="index.html">Home version 1 </a></li>
                                                 <li><a href="index-2.html">Home version 2</a></li>
@@ -170,7 +170,7 @@ button[type="submit"]:hover {
                                                 <li><a href="index-8.html">Home version 8</a></li>
                                             </ul>
                                         </li>
-                                        <li><a href="shop.html">SHOP</a>
+                                        <li><a href="/shop">SHOP</a>
                                             <ul class="mega-menu-style mega-menu-mrg-1">
                                                 <li>
                                                     <ul>
@@ -298,7 +298,7 @@ button[type="submit"]:hover {
                         <h4>Subtotal: <span>$170.00</span></h4>
                     </div>
                     <div class="cart-btn btn-hover">
-                        <a class="theme-color" href="cart.html">view cart</a>
+                        <a class="theme-color" href="/cart">view cart</a>
                     </div>
                     <div class="checkout-btn btn-hover">
                         <a class="theme-color" href="checkout.html">checkout</a>
@@ -317,12 +317,7 @@ button[type="submit"]:hover {
                     </ul>
                 </div>
             </div>
-            <div class="breadcrumb-img-1">
-                <img src="assets/images/banner/breadcrumb-1.png" alt="">
-            </div>
-            <div class="breadcrumb-img-2">
-                <img src="assets/images/banner/breadcrumb-2.png" alt="">
-            </div>
+           
         </div>
         <!-- my account wrapper start -->
         <div class="my-account-wrapper pb-100 pt-100">
@@ -341,6 +336,8 @@ button[type="submit"]:hover {
                                         <a href="#payment-method" data-bs-toggle="tab">Payment Method</a> -->
                                         <a href="#address-edit" data-bs-toggle="tab">Address</a>
                                         <a href="#account-info" data-bs-toggle="tab">Account Details</a>
+                                        <a href="#wallet" data-bs-toggle="tab">Wallet</a>
+
                                         <a href="/register">Logout</a>
                                     </div>
                                 </div>
@@ -382,37 +379,77 @@ button[type="submit"]:hover {
                                                     <table class="table table-bordered">
                                                         <thead class="thead-light">
                                                             <tr>
-                                                                <th>Order</th>
-                                                                <th>Date</th>
-                                                                <th>Status</th>
-                                                                <th>Total</th>
-                                                                <th>Action</th>
+                                                                <th>SL. No.</th>
+                                                                 <th>Date</th>
+                                                                 <th>ID</th>
+                                                                 <th>Total Amount</th>
+                                                                 <th>Method</th>
+                                                                 <th>Status</th>
+                                                                 <th>Action</th>
                                                             </tr>
                                                         </thead>
                                                         <tbody>
+                                                            <% for(let i=0;i < orderData.length; i++){%>
                                                             <tr>
-                                                                <td>1</td>
-                                                                <td>Aug 22, 2022</td>
-                                                                <td>Pending</td>
-                                                                <td>$3000</td>
-                                                                <td><a href="cart.html" class="check-btn sqr-btn ">View</a></td>
+                                                                <td><%= i+1%></td>
+                                                                <td><%= orderData[i].date.toLocaleDateString('en-US', {
+                                                                    year:'numeric', month: 'short' , day: '2-digit'
+                                                                  }).replace(/\//g, '-' )%>%></td>
+                                                                <td><%= orderData[i].orderId%></td>
+                                                                <td><%= orderData[i].subtotal%></td>
+                                                                <td><%= orderData[i].paymentMethod%></td>
+                                                                <td><%= orderData[i].status%></td>
+                                                                <td><a href="/orderView?id=<%= orderData[i]._id%>"><button class="action-btn">View</button></a></td>
+                                                                <% if(orderData[i].status === 'delivered'){ %>
+                                                                    <td><button>Return</button></td>
+                                                               <% }else{ %>
+                                                               <td><button>Cancel</button></td> 
+                                                              <% } %>
+                                                                
                                                             </tr>
-                                                            <tr>
-                                                                <td>2</td>
-                                                                <td>July 22, 2022</td>
-                                                                <td>Approved</td>
-                                                                <td>$200</td>
-                                                                <td><a href="cart.html" class="check-btn sqr-btn ">View</a></td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td>3</td>
-                                                                <td>June 12, 2017</td>
-                                                                <td>On Hold</td>
-                                                                <td>$990</td>
-                                                                <td><a href="cart.html" class="check-btn sqr-btn ">View</a></td>
-                                                            </tr>
+                                                            <% } %>
                                                         </tbody>
                                                     </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="tab-pane fade" id="wallet" role="tabpanel">
+                                            <div class="myaccount-content">
+                                                <h3>wallet: ₹<%= user.wallet %></h3>
+                                                <div>
+                                                    <table class="table table-bordered">
+                                                        <thead class="thead-light">
+                                                            <!-- Table Head Content -->
+                                                        </thead>
+                                                        <!-- Table Body Content -->
+                                                    </table>
+                                    
+                                                    <div class="d-flex justify-content-end">
+                                                        <div>
+                                                            <button class="btn btn-success d-block my-2">Add Money</button>
+                                                            <button class="btn btn-danger d-block my-2">Withdraw</button>
+                                                        </div>
+                                                    </div>
+                                    
+                                                    <!-- Toggle Button for Wallet History -->
+                                                    <div class="d-flex justify-content-end">
+                                                        <button id="toggleHistory" class="btn btn-info d-block my-2">Toggle Wallet History</button>
+                                                    </div>
+                                    
+                                                    <!-- Wallet History Section -->
+                                                    <div id="walletHistory" class="my-3" style="display: none;">
+                                                        <h4>Wallet History</h4>
+                                                        <table class="table table-bordered">
+                                                            <thead class="thead-light">
+                                                                <tr>
+                                                                    <th>Date</th>
+                                                                    <th>Transaction</th>
+                                                                    <th>Amount</th>
+                                                                </tr>
+                                                            </thead>
+                                                            
+                                                        </table>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -469,73 +506,56 @@ button[type="submit"]:hover {
                                               <div id="address-form-container" style="display: none;">
                                                 <!-- Address form will be appended here -->
                                               </div>
-                                              <!-- edit address modal ------------------------------------------------------------------------------- -->
-                                              <div class="modal fade" id="exampleModalCenter1" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-                                                <div class="modal-dialog modal-dialog-centered" role="document">
-                                                  <div class="modal-content">
-                                                    <div class="modal-header">
-                                                      <h5 class="modal-title" id="exampleModalLongTitle">edit address</h5>
-                                                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                        <span aria-hidden="true">&times;</span>
-                                                      </button>
-                                                    </div>
-                                                    <div class="modal-body">
-                                                        <div class="container">
-                                                            <h2>Address Form</h2>
-                                                            <form action="/editaddress" method="POST">
-                                                                <% if (userAddresses && userAddresses.addresses) { %>
-                                                                    <% userAddresses.addresses.forEach((address) => { %>
-                                                              <div class="form-group">
-                                                                <input type="text" id="fname" name="fname" placeholder="First Name" value="<%= address.fname %>"  required>
-                                                                <input type="hidden" name="id" value="<%= address._id %>">
-                                                              </div>
-                                                              <div class="form-group">
-                                                                <input type="text" id="lname" name="lname" placeholder="Last Name" value="<%= address.lname %>"  required>
-                                                              </div>
-                                                              <div class="form-group">
-                                                                <input type="email" id="email" name="email" placeholder="Email"  value="<%= address.email %>"  required>
-                                                              </div>
-                                                              <div class="form-group">
-                                                                <input type="text" id="address" name="address" placeholder="Address"   value="<%= address.address %>" required>
-                                                              </div>
-                                                              <div class="form-group">
-                                                                <input type="tel" id="mobile" name="mobile" placeholder="Mobile" value="<%= address.mobile %>" required>
-                                                              </div>
-                                                              <div class="form-group">
-                                                                <input type="text" id="place" name="place" placeholder="Place"  value="<%= address.place %>"required>
-                                                              </div>
-                                                              <div class="form-group">
-                                                                <input type="text" id="pin" name="pin" placeholder="PIN"  value="<%= address.pin %>" required>
-                                                              </div>
-                                                              <button type="submit">Submit</button>
-                                                            </form>
-                                                          </div>
-                                                    </div>
-                                                    <div class="modal-footer">
-                                                      <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                                      <button type="button" class="btn btn-primary">Save changes</button>
-                                                    </div>
-                                                  </div>
-                                                </div>
-                                              </div> 
+ 
+                                           
                                               <!-- edit address modal ------------------------------------------------------------------------------- -->
 
-                                             
+                                              <% if (userAddresses && userAddresses.addresses) { %>
+                                                <% userAddresses.addresses.forEach((address,index) => { %>
                                                   <p style="color: black;">
                                                     <%= address.fname %> <%= address.lname %> &nbsp;, <%= address.email %> <br>
                                                     <%= address.mobile %> &nbsp;,<%= address.address %> &nbsp;, <%= address.place %> &nbsp;, <br>
                                                     <%= address.pin %>
                                                   </p>
-                                                  <button type="button" class="btn btn-primary1" data-toggle="modal" onclick="editAddress('<%= address.fname %>','<%= address.lname %>','<%= address.email %>','<%= address.mobile %>','<%= address.mobile %>','<%= address.address %>','<%= address.place %>','<%= address.place %>','<%= address.pin %>','<%= address._id %>')" data-target="#exampleModalCenter1">
-                                                    Edit
-                                                </button>
+                                                  <a href="/loadeditaddress?id=<%= address._id %>&index=<%= index %>">Edit</a>
                                                 
                                                   &nbsp;
-                                                  <a href="/deleteaddress?id=<%= address._id %>">Delete</a>
+                                                  <a href="#" class="delete-address" data-address-id="<%= address._id %>">Delete</a>
+                                                  <input type="hidden" value="<%= address._id %>" id="addressid1">
                                                 <% }) %>
                                               <% } %>
-                                              
-                                          
+                                              <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+                                          <script>
+                                            // Add event listener to "Delete" links with the class "delete-address"
+document.addEventListener('DOMContentLoaded', function () {
+    const deleteLinks = document.querySelectorAll('.delete-address');
+    deleteLinks.forEach(link => {
+        link.addEventListener('click', function (event) {
+            event.preventDefault(); // Prevent the default link behavior
+
+            const addressId = this.getAttribute('data-address-id'); // Get the address ID from the data attribute
+            const addressId1 = document.getElementById('addressid1').value
+            // Show SweetAlert confirmation dialog
+            Swal.fire({
+                title: 'Are you sure?',
+                text: 'You will not be able to recover this address!',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // If user confirms, proceed with the deletion
+                    window.location.href = '/deleteaddress?id=' + addressId1;
+                }
+            });
+        });
+    });
+});
+
+                                          </script>
                                           <!-------------------------------------------------------- Modal for add address -->
                                           <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
                                             <div class="modal-dialog modal-dialog-centered" role="document">
@@ -546,35 +566,42 @@ button[type="submit"]:hover {
                                                     <span aria-hidden="true">&times;</span>
                                                   </button>
                                                 </div>
-                                                <div class="modal-body">
-                                                    <div class="container">
-                                                        <h2>Address Form</h2>
-                                                        <form action="/addaddress" method="POST">
-                                                          <div class="form-group">
-                                                            <input type="text" id="fname" name="fname" placeholder="First Name" required>
-                                                          </div>
-                                                          <div class="form-group">
-                                                            <input type="text" id="lname" name="lname" placeholder="Last Name" required>
-                                                          </div>
-                                                          <div class="form-group">
-                                                            <input type="email" id="email" name="email" placeholder="Email" required>
-                                                          </div>
-                                                          <div class="form-group">
-                                                            <input type="text" id="address" name="address" placeholder="Address" required>
-                                                          </div>
-                                                          <div class="form-group">
-                                                            <input type="tel" id="mobile" name="mobile" placeholder="Mobile" required>
-                                                          </div>
-                                                          <div class="form-group">
-                                                            <input type="text" id="place" name="place" placeholder="Place" required>
-                                                          </div>
-                                                          <div class="form-group">
-                                                            <input type="text" id="pin" name="pin" placeholder="PIN" required>
-                                                          </div>
-                                                          <button type="submit">Submit</button>
-                                                        </form>
-                                                      </div>
-                                                </div>
+                                                <<div class="modal-body">
+                                                <div class="container">
+                                                   <h2>Address Form</h2>
+                                                        <form id="addressForm" action="/addaddress" method="POST">
+                                                           <div class="form-group">
+                                                           <input type="text" id="fname" name="fname" placeholder="First Name" required>
+                                                           <span class="error-message" id="fnameError"></span>
+                                                 </div>
+                                                 <div class="form-group">
+                                                 <input type="text" id="lname" name="lname" placeholder="Last Name" required>
+                                                 <span class="error-message" id="lnameError"></span>
+                                                 </div>
+                                                 <div class="form-group">
+                                                      <input type="email" id="email" name="email" placeholder="Email" required>
+                                                      <span class="error-message" id="emailError"></span>
+                                                 </div>
+                                                 <div class="form-group">
+                                                      <input type="text" id="address" name="address" placeholder="Address" required>
+                                                      <span class="error-message" id="addressError"></span>
+                                                 </div>
+                                                 <div class="form-group">
+                                                     <input type="tel" id="mobile" name="mobile" placeholder="Mobile" required>
+                                                     <span class="error-message" id="mobileError"></span>
+                                                 </div>
+                                                 <div class="form-group">
+                                                     <input type="text" id="place" name="place" placeholder="Place" required>
+                                                     <span class="error-message" id="placeError"></span>
+                                                 </div>
+                                                 <div class="form-group">
+                                                     <input type="text" id="pin" name="pin" placeholder="PIN" required>
+                                                     <span class="error-message" id="pinError"></span>
+                                                 </div>
+                                                     <button type="submit">Submit</button>
+                                                  </form>
+                                                  </div>
+                                                </div>y
                                                 <div class="modal-footer">
                                                   <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                                                   <button type="button" class="btn btn-primary">Save changes</button>
@@ -594,26 +621,26 @@ button[type="submit"]:hover {
                                                         <div class="row">
                                                             <div class="col-lg-6">
                                                                 <div class="single-input-item">
-                                                                    <label for="first-name" class="required">Name</label>
+                                                                    <label for="first-name" class="required">First Name</label>
                                                                     <input type="text" id="first-name" />
                                                                 </div>
                                                             </div>
-                                                            <!-- <div class="col-lg-6">
+                                                            <div class="col-lg-6">
                                                                 <div class="single-input-item">
                                                                     <label for="last-name" class="required">Last Name</label>
                                                                     <input type="text" id="last-name" />
                                                                 </div>
-                                                            </div> -->
+                                                            </div>
                                                         </div>
                                                         <div class="single-input-item">
-                                                            <label for="display-name" class="required">Phone number</label>
+                                                            <label for="display-name" class="required">Display Name</label>
                                                             <input type="text" id="display-name" />
                                                         </div>
                                                         <div class="single-input-item">
                                                             <label for="email" class="required">Email Addres</label>
                                                             <input type="email" id="email" />
                                                         </div>
-                                                        <!-- <fieldset>
+                                                        <fieldset>
                                                             <legend>Password change</legend>
                                                             <div class="single-input-item">
                                                                 <label for="current-pwd" class="required">Current Password</label>
@@ -633,9 +660,9 @@ button[type="submit"]:hover {
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                        </fieldset> -->
+                                                        </fieldset>
                                                         <div class="single-input-item btn-hover">
-                                                            <button class="check-btn sqr-btn">Edit Profile</button>
+                                                            <button class="check-btn sqr-btn">Save Changes</button>
                                                         </div>
                                                     </form>
                                                 </div>
@@ -824,7 +851,103 @@ button[type="submit"]:hover {
     <!-- All JS is here -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-
+    <script>
+        document.addEventListener('DOMContentLoaded', (event) => {
+            const form = document.getElementById('addressForm');
+        
+            form.addEventListener('submit', function (e) {
+                e.preventDefault(); // Prevent form submission
+        
+                // Clear previous error messages
+                document.querySelectorAll('.error-message').forEach(el => el.textContent = '');
+        
+                let isValid = true;
+        
+                // Validate First Name
+                const fname = document.getElementById('fname');
+                if (fname.value.trim() === '') {
+                    document.getElementById('fnameError').textContent = 'First Name is required';
+                    isValid = false;
+                }
+        
+                // Validate Last Name
+                const lname = document.getElementById('lname');
+                if (lname.value.trim() === '') {
+                    document.getElementById('lnameError').textContent = 'Last Name is required';
+                    isValid = false;
+                }
+        
+                // Validate Email
+                const email = document.getElementById('email');
+                const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+                if (email.value.trim() === '') {
+                    document.getElementById('emailError').textContent = 'Email is required';
+                    isValid = false;
+                } else if (!emailPattern.test(email.value)) {
+                    document.getElementById('emailError').textContent = 'Invalid email address';
+                    isValid = false;
+                }
+        
+                // Validate Address
+                const address = document.getElementById('address');
+                if (address.value.trim() === '') {
+                    document.getElementById('addressError').textContent = 'Address is required';
+                    isValid = false;
+                }
+        
+                // Validate Mobile
+                const mobile = document.getElementById('mobile');
+                const mobilePattern = /^[6-9]\d{9}$/;
+                if (mobile.value.trim() === '') {
+                    document.getElementById('mobileError').textContent = 'Mobile number is required';
+                    isValid = false;
+                } else if (!mobilePattern.test(mobile.value)) {
+                    document.getElementById('mobileError').textContent = 'Invalid mobile number';
+                    isValid = false;
+                }
+        
+                // Validate Place
+                const place = document.getElementById('place');
+                if (place.value.trim() === '') {
+                    document.getElementById('placeError').textContent = 'Place is required';
+                    isValid = false;
+                }
+        
+                // Validate PIN
+                const pin = document.getElementById('pin');
+                if (pin.value.trim() === '') {
+                    document.getElementById('pinError').textContent = 'PIN is required';
+                    isValid = false;
+                }
+        
+                // If all validations pass, submit the form
+                if (isValid) {
+                    form.submit();
+                }
+            });
+        });
+        </script>
+        
+        <style>
+        .error-message {
+            color: red;
+            font-size: 0.875em;
+        }
+        </style>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const toggleButton = document.getElementById('toggleHistory');
+                const walletHistory = document.getElementById('walletHistory');
+        
+                toggleButton.addEventListener('click', function() {
+                    if (walletHistory.style.display === 'none') {
+                        walletHistory.style.display = 'block';
+                    } else {
+                        walletHistory.style.display = 'none';
+                    }
+                });
+            });
+            </script>
     <script src="assets/js/vendor/modernizr-3.11.7.min.js"></script>
     <script src="assets/js/vendor/jquery-3.6.0.min.js"></script>
     <script src="assets/js/vendor/jquery-migrate-3.3.2.min.js"></script>
@@ -850,8 +973,9 @@ button[type="submit"]:hover {
     <!-- Main JS -->
     <script src="assets/js/main.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-
     
+
+  
 
 </body>
 

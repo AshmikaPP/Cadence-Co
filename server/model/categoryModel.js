@@ -12,7 +12,15 @@ const categorySchema = new mongoose.Schema({
     is_Listed:{
         type:Boolean,
         default:true
-    }
+    },
+    categoryoffer:{
+        type:Number,
+        default:0
+   },
+   is_offerapply:{
+    type:Boolean,
+    default:false
+ }
 });
 module.exports = mongoose.model('category',categorySchema);
 

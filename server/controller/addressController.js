@@ -31,7 +31,7 @@ const useraddress = async(req,res)=>{
         res.redirect("/profile")
     } catch (error) {
         console.log(error)
-        // Send a response back to the client indicating that there was an error
+        
         res.status(500).send('An error occurred while adding the address.')
     }
 }
@@ -61,24 +61,38 @@ const useraddress = async(req,res)=>{
 //         console.log(error.message)
 //     }
 // };
+const loadedit = async(req,res)=>{
+    try {
+        const index = req.query.index
+        const userid = req.session.UserId
+        const address = await Address.findOne({user:userid})
+        const addressData = address.addresses[index]
+        
 
+        console.log("new address",address);
+        res.render("editaddress",{addressData:addressData})
+    } catch (error) {
+        console.log(error.message);
+    }
+}
 const Editaddress = async (req, res) => {
     try {
-        const { fname, lname, mobile, email, address, place, pin, id } = req.body;
+        const { id, fname, lname, mobile, email, address, place, pin } = req.body; 
         const userId = req.session.UserId;
 
-        console.log(id,"yfyrey")
-
+        console.log(id,"yfyrey");
+       
         const user = await Address.findOne({ user: userId });
-        if (!user) {
+        
+       
+        const addressToUpdateIndex = user.addresses.findIndex(addr => addr._id.toString() === id);
+        if (addressToUpdateIndex === -1) {
             return res.status(404).json({ success: false, message: "Address not found" });
         }
 
-        const addressToUpdate = user.addresses.find(addr => addr._id.toString() === id);
-        if (!addressToUpdate) {
-            return res.status(404).json({ success: false, message: "Address not found" });
-        }
+        const addressToUpdate = user.addresses[addressToUpdateIndex];
 
+       
         addressToUpdate.fname = fname;
         addressToUpdate.lname = lname;
         addressToUpdate.email = email;
@@ -87,9 +101,10 @@ const Editaddress = async (req, res) => {
         addressToUpdate.place = place;
         addressToUpdate.pin = pin;
 
+       
         await user.save();
         
-      res.redirect("/profile")
+        res.redirect("/profile");
     } catch (error) {
         console.error("Error editing address:", error);
         res.status(500).json({ success: false, message: "Error editing address" });
@@ -119,6 +134,6 @@ const deleteaddress = async(req,res)=>{
 module.exports={
     useraddress,
     Editaddress,
-    
+    loadedit,
     deleteaddress
 }

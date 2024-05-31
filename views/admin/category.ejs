@@ -17,6 +17,31 @@
     </head>
 
     <body>
+        <style>
+            .calculate-discount-btn .btn.theme-color {
+                background-color: green; 
+                color: white;
+            }
+    
+            .btn-sm {
+                padding: 5px 5px; 
+                font-size: 5px; 
+            }
+    
+            .remove-offer-btn {
+                background-color: red; /* Red background color */
+                color: white; /* White text color */
+                border: none; /* No border */
+                padding: 10px 20px; /* Padding for the button */
+                cursor: pointer; /* Pointer cursor on hover */
+                border-radius: 5px; /* Rounded corners */
+            }
+    
+            .remove-offer-btn:hover {
+                background-color: darkred; /* Darker red on hover */
+            }
+        </style>
+        
         <div class="screen-overlay"></div>
         <aside class="navbar-aside" id="offcanvas_aside">
             <div class="aside-top">
@@ -54,6 +79,36 @@
                             <i class="icon material-icons md-person"></i>
                             <span class="text">User list</span>
                         </a>
+                    </li>
+                    <li class="menu-item active">
+                        <a class="menu-link" href="/orderDatas">
+                            <i class="icon material-icons md-shopping_cart"></i>
+                            <span class="text">Orders</span>
+                        </a>
+                        
+                    </li>
+                    <li class="menu-item">
+                        <a class="menu-link"  href="/loadCoupon">
+                            <i class="icon material-icons md-pie_chart"></i>
+                            <span class="text">Coupon</span>
+                        </a>
+                    </li>
+                    <li class="menu-item has-submenu">
+                        <a class="menu-link" href="/loadOffer">
+                            <i class="icon material-icons md-monetization_on"></i>
+                            <span class="text">Offers</span>
+                        </a>
+                        <!-- <div class="submenu">
+                            <a href="page-transactions-1.html">Transaction 1</a>
+                            <a href="page-transactions-2.html">Transaction 2</a>
+                        </div> -->
+                    </li>
+                    <li class="menu-item has-submenu ">
+                        <a class="menu-link" href="/Salesreport">
+                            <i class="icon material-icons md-store"></i>
+                            <span class="text">Salesreport</span>
+                        </a>
+
                     </li>
                    
                 <br />
@@ -155,6 +210,7 @@
                                         <th scope="col">Edit</th>
                                         <th scope="col">Delete</th>
                                         <th scope="col" >Action</th>
+                                        <th scope="col">Offer</th>
                                     </tr>
 
                                 </thead>
@@ -167,7 +223,9 @@
 
                                            
                                         
-                                            <td><a href="/deletecategory?id=<%= Category[i]._id %>">Delete</a></td>
+                                            <td>
+                                                <a href="#" class="delete-category" data-id="<%= Category[i]._id %>">Delete</a>
+                                            </td>
 
                                             <% if(Category[i]. is_Listed == true){%>
                                                 <td><a href="/Unlistcategory?id=<%= Category[i]._id %>">Unlist</a></td>
@@ -176,6 +234,16 @@
                                                 <td><a href="/listcategory?id=<%= Category[i]._id %>">List</a></td>
 
                                             <%}%>
+                                            <td>
+                                                <div class="calculate-discount-btn btn-hover">
+                                                    <% if(Category[i].is_offerapply) { %>
+                                                        <button class="remove-offer-btn" onclick="removeOffer('<%= Category[i]._id %>')">Remove Offer</button>
+                                                    <% } else { %>
+                                                        <a class="btn theme-color" href="/applyoffer?id=<%= Category[i]._id %>">Apply Offer</a>
+                                                    <% } %>
+                                                </div>
+                                            </td>
+                            
                                             
                                         </tr>
                                     <% } %>
@@ -204,6 +272,117 @@
                 <!-- </div> -->
             </footer>
         </main>
+
+        <script>
+            async function removeOffer(categoryId) {
+                try {
+                    const response = await fetch('/removeoffer', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ categoryId })
+                    });
+    
+                    const result = await response.json();
+                    if (response.ok) {
+                        Swal.fire(
+                            'Removed!',
+                            result.message,
+                            'success'
+                        ).then(() => {
+                            window.location.reload();
+                        });
+                    } else {
+                        Swal.fire(
+                            'Error!',
+                            result.message || 'Failed to remove offer.',
+                            'error'
+                        );
+                    }
+                } catch (error) {
+                    console.error('Error removing offer:', error);
+                    Swal.fire(
+                        'Error!',
+                        'An error occurred while removing the offer.',
+                        'error'
+                    );
+                }
+            }
+    
+            function confirmRemoveOffer(categoryId) {
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "You won't be able to revert this!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, remove it!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        removeOffer(categoryId);
+                    }
+                });
+            }
+        </script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const deleteLinks = document.querySelectorAll('.delete-category');
+        
+                deleteLinks.forEach(link => {
+                    link.addEventListener('click', function (event) {
+                        event.preventDefault(); // Prevent default anchor click behavior
+        
+                        const categoryId = this.getAttribute('data-id');
+        
+                        // Show SweetAlert2 confirmation dialog
+                        Swal.fire({
+                            title: 'Are you sure?',
+                            text: "You won't be able to revert this!",
+                            icon: 'warning',
+                            showCancelButton: true,
+                            confirmButtonColor: '#3085d6',
+                            cancelButtonColor: '#d33',
+                            confirmButtonText: 'Yes, delete it!'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                // If confirmed, make a request to delete the category
+                                fetch(`/deletecategory?id=${categoryId}`, {
+                                    method: 'GET' // Use appropriate method (GET/POST)
+                                })
+                                .then(response => {
+                                    if (response.ok) {
+                                        Swal.fire(
+                                            'Deleted!',
+                                            'Your category has been deleted.',
+                                            'success'
+                                        ).then(() => {
+                                            // Redirect to the LoadCategory page
+                                            window.location.href = '/LoadCategory'; // Adjust the URL to your LoadCategory page
+                                        });
+                                    } else {
+                                        Swal.fire(
+                                            'Error!',
+                                            'There was an error deleting the category.',
+                                            'error'
+                                        );
+                                    }
+                                });
+                            }
+                        });
+                    });
+                });
+            });
+        </script>
+
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        
+        
+         
+          
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
         <script src="assets/js/vendors/jquery-3.6.0.min.js"></script>
         <script src="assets/js/vendors/bootstrap.bundle.min.js"></script>
         <script src="assets/js/vendors/select2.min.js"></script>

@@ -8,7 +8,7 @@ const cartSchema = new mongoose.Schema({
     },
     product: [
         {
-            productId:{
+            product_id:{
                 type:mongoose.Schema.Types.ObjectId,
                 ref:"product",
                 required:true,
@@ -34,7 +34,12 @@ const cartSchema = new mongoose.Schema({
                 default:0
             }
         }
+        
     ],
+    subtotal:{
+        type:Number,
+        default:true
+    }
 
 })
 module.exports = mongoose.model('Cart',cartSchema);

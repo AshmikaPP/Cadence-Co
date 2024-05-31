@@ -1,0 +1,72 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Completed</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f3f3f3;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            max-width: 400px;
+            padding: 40px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        .tick-mark {
+            color: #2ecc71;
+            font-size: 50px;
+            margin-bottom: 20px;
+            border-radius: 50%;
+            background-color: #f0f0f0;
+            width: 100px;
+            height: 100px;
+            line-height: 100px;
+            display: inline-block;
+        }
+        .order-message {
+            font-size: 24px;
+            margin-bottom: 30px;
+        }
+        .button-container {
+            display: flex;
+            justify-content: center;
+        }
+        .button {
+            padding: 10px 20px;
+            margin: 0 10px;
+            border-radius: 5px;
+            background-color: #2ecc71;
+            color: #fff;
+            text-decoration: none;
+            font-size: 18px;
+            transition: background-color 0.3s ease;
+        }
+        .button:hover {
+            background-color: #27ae60;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="tick-mark">✓</div>
+        <div class="order-message">Your order is successfully completed!</div>
+        <div class="button-container">
+            <a href="/shop" class="button">Continue Shopping</a>
+            <a href="/orderDetails" class="button">View Order</a>
+        </div>
+    </div>
+</body>
+</html>
+
+

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Details</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f2f2f2;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        tr:hover {
+            background-color: #ddd;
+        }
+        .action-btn {
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            padding: 8px 12px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 14px;
+            margin: 4px 2px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Order Details</h2>
+
+    <table>
+        <thead>
+        <tr>
+            <th>SL. No.</th>
+            <th>Date</th>
+            <th>ID</th>
+            <th>Total Amount</th>
+            <th>Method</th>
+            <th>Status</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        
+            <% for(let i=0;i < orderData.length; i++){%>
+                <tr>
+            <td><%= i+1%></td>
+            <td><%= orderData[i].date.toLocaleDateString('en-US', {
+                year:'numeric', month: 'short' , day: '2-digit'
+              }).replace(/\//g, '-' )%></td>
+            <td><%= orderData[i].orderId%></td>
+            <td><%= orderData[i].subtotal%></td>
+            <td><%= orderData[i].paymentMethod%></td>
+            <td><%= orderData[i].status%></td>
+            <td><a href="/orderView?id=<%= orderData[i]._id%>"><button class="action-btn">View</button></a></td>
+        </tr>
+            <% } %>
+            
+        
+        <!-- Add more rows for each order -->
+        </tbody>
+    </table>
+</div>
+
+</body>
+</html>
+

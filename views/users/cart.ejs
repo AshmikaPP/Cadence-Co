@@ -50,6 +50,65 @@
 
 
 <body>
+
+    <style>
+        /* CSS for cart quantity buttons */
+.cart-minus-button,
+.cart-plus-button {
+    display: inline-block;
+    width: 30px;
+    height: 30px;
+    text-align: center;
+    line-height: 30px;
+    background-color: #ddd; /* Background color of the buttons */
+    border: 1px solid #ccc; /* Border color of the buttons */
+    cursor: pointer;
+}
+
+/* Style for the input field */
+.cart-quantity-input {
+    width: 50px;
+    height: 30px;
+    text-align: center;
+    border: 1px solid #ccc; /* Border color of the input field */
+}
+
+/* Adjust spacing between buttons and input field */
+.product-quantity {
+    display: flex;
+    align-items: center;
+}
+
+.cart-minus-button {
+    border-radius: 4px 0 0 4px; /* Rounded corners for left button */
+}
+
+.cart-plus-button {
+    border-radius: 0 4px 4px 0; /* Rounded corners for right button */
+}
+
+.cart-minus-button:hover,
+.cart-plus-button:hover {
+    background-color: #bbb; /* Hover background color */
+}
+
+/* Additional styling for the quantity buttons */
+.cart-minus-button::before,
+.cart-plus-button::before {
+    content: '';
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.cart-minus-button::before {
+    content: '-';
+}
+
+.cart-plus-button::before {
+    content: '+';
+}
+
+    </style>
     <div class="main-wrapper main-wrapper-2">
         <header class="header-area header-responsive-padding header-height-1">
             <div class="header-top d-none d-lg-block bg-gray">
@@ -99,7 +158,7 @@
                             <div class="main-menu text-center">
                                 <nav>
                                     <ul>
-                                        <li><a href="index.html">HOME</a>
+                                        <li><a href="/">HOME</a>
                                             <ul class="sub-menu-style">
                                                 <li><a href="index.html">Home version 1 </a></li>
                                                 <li><a href="index-2.html">Home version 2</a></li>
@@ -111,7 +170,7 @@
                                                 <li><a href="index-8.html">Home version 8</a></li>
                                             </ul>
                                         </li>
-                                        <li><a href="shop.html">SHOP</a>
+                                        <li><a href="/shop">SHOP</a>
                                             <ul class="mega-menu-style mega-menu-mrg-1">
                                                 <li>
                                                     <ul>
@@ -242,7 +301,7 @@
                         <a class="theme-color" href="cart.html">view cart</a>
                     </div>
                     <div class="checkout-btn btn-hover">
-                        <a class="theme-color" href="checkout.html">checkout</a>
+                        <a class="theme-color" href="/checkout">checkout</a>
                     </div>
                 </div>
             </div>
@@ -258,12 +317,7 @@
                     </ul>
                 </div>
             </div>
-            <div class="breadcrumb-img-1">
-                <img src="assets/images/banner/breadcrumb-1.png" alt="">
-            </div>
-            <div class="breadcrumb-img-2">
-                <img src="assets/images/banner/breadcrumb-2.png" alt="">
-            </div>
+            
         </div>
         <div class="cart-area pt-100 pb-100">
             <div class="container">
@@ -276,81 +330,107 @@
                                         <thead>
                                             <tr>
                                                 <th class="width-thumbnail"></th>
-                                                <th class="width-name">Product</th>
+                                                <th class="width-name">Name</th>
                                                 <th class="width-price"> Price</th>
                                                 <th class="width-quantity">Quantity</th>
-                                                <th class="width-subtotal">Subtotal</th>
+                                                <th class="width-quantity">total</th>
+                                                <th class="width-subtotal">Delete</th>
                                                 <th class="width-remove"></th>
                                             </tr>
                                         </thead>
+                                        <!-- <tbody>
+                                            <% if (cartProducts && cartProducts.product) { %>
+                                                <% cartProducts.product.forEach((cartItem) => { %>
+                                                    <% let total=0; %>
+                                                    <%= total *=cartItem.quantity; %>
+                                                    <tr>
+                                                        <td class="product-thumbnail">
+                                                            <img src="/uploads/product/<%= cartItem.product_id.image[0] %>" alt="<%= cartItem.name %>" width="100px" height="100px">
+                                                        </td>
+                                                        <td class="product-name">
+                                                            <%= cartItem.name %>
+                                                        </td>
+                                                        <td class="product-cart-price"><span class="amount">$<%= cartItem.price.toFixed(2) %></span></td>
+                                                        <td class="cart-quality">
+                                                            <div class="product-quality">
+                                                                <input class="cart-plus-minus-box input-text qty text" name="qtybutton" value="<%= cartItem.quantity %>">
+                                                            </div>
+                                                        </td>
+                                                        <td class="product-total"><span>$<%= (cartItem.price * cartItem.quantity).toFixed(2) %></span></td>
+                                                        <td class="product-remove"><a href="#"><i class="ti-trash"></i></a></td>
+                                                    </tr>
+                                                <% }); %>
+                                            <% } else { %>
+                                                <tr>
+                                                        <td colspan="6">No items in the cart</td>
+                                                </tr>
+                                            <% } %>
+                                        </tbody> -->
+
+
                                         <tbody>
-                                            <tr>
-                                                <td class="product-thumbnail">
-                                                    <a href="product-details.html"><img src="assets/images/cart/cart-1.jpg" alt=""></a>
-                                                </td>
-                                                <td class="product-name">
-                                                    <h5><a href="product-details.html">Stylish Swing Chair</a></h5>
-                                                </td>
-                                                <td class="product-cart-price"><span class="amount">$120.00</span></td>
-                                                <td class="cart-quality">
-                                                    <div class="product-quality">
-                                                        <input class="cart-plus-minus-box input-text qty text" name="qtybutton" value="1">
-                                                    </div>
-                                                </td>
-                                                <td class="product-total"><span>$120.00</span></td>
-                                                <td class="product-remove"><a href="#"><i class=" ti-trash "></i></a></td>
-                                            </tr>
-                                            <!-- <tr>
-                                                <td class="product-thumbnail">
-                                                    <a href="product-details.html"><img src="assets/images/cart/cart-2.jpg" alt=""></a>
-                                                </td>
-                                                <td class="product-name">
-                                                    <h5><a href="product-details.html">Modern Lounge Chairs</a></h5>
-                                                </td>
-                                                <td class="product-cart-price"><span class="amount">$120.00</span></td>
-                                                <td class="cart-quality">
-                                                    <div class="product-quality">
-                                                        <input class="cart-plus-minus-box input-text qty text" name="qtybutton" value="1">
-                                                    </div>
-                                                </td>
-                                                <td class="product-total"><span>$120.00</span></td>
-                                                <td class="product-remove"><a href="#"><i class=" ti-trash "></i></a></td>
-                                            </tr> -->
-                                            <!-- <tr>
-                                                <td class="product-thumbnail">
-                                                    <a href="product-details.html"><img src="assets/images/cart/cart-3.jpg" alt=""></a>
-                                                </td>
-                                                <td class="product-name">
-                                                    <h5><a href="product-details.html">Modern Swivel Chair</a></h5>
-                                                </td>
-                                                <td class="product-cart-price"><span class="amount">$120.00</span></td>
-                                                <td class="cart-quality">
-                                                    <div class="product-quality">
-                                                        <input class="cart-plus-minus-box input-text qty text" name="qtybutton" value="1">
-                                                    </div>
-                                                </td>
-                                                <td class="product-total"><span>$120.00</span></td>
-                                                <td class="product-remove"><a href="#"><i class=" ti-trash "></i></a></td>
-                                            </tr> -->
+                                            <% if (cartProducts && cartProducts.product) { %>
+                                                <% cartProducts.product.forEach((cartItem) => { %>
+                                                    <% console.log("cartItem",cartProducts.subtotal)%>
+                                                    <tr>
+                                                        <td class="product-thumbnail">
+                                                            <img src="/uploads/product/<%= cartItem.product_id.image[0] %>" alt="<%= cartItem.name %>" width="100px" height="100px">
+                                                        </td>
+                                                        <!-- <h1><%= cartItem.product_id._id %></h1> -->
+                                                        <td class="product-name">
+                                                            <%= cartItem.name %>
+                                                        </td>
+                                                        <td class="product-cart-price"><span class="amount">₹<%= cartItem.price.toFixed(2) %></span></td>
+                                                        <td class="cart-quantity">
+                                                            <div class="product-quantity">
+                                                                <button class="cart-minus-button" data-product-id="<%= cartItem._id %>" onclick="updateQuantity('<%= cartItem.product_id._id %>', -1)"></button>
+                                                                <input class="cart-quantity-input input-text qty text" data-product-id="<%= cartItem._id %>" name="qtybutton" value="<%= cartItem.quantity %>">
+                                                                <button class="cart-plus-button" data-product-id="<%= cartItem._id %>" onclick="updateQuantity('<%= cartItem.product_id._id %>', 1)"></button>
+                                                            </div>
+                                                        </td>
+                                                        <td class="product-total"><span>₹<%= (cartItem.total).toFixed(2) %></span></td>
+                                                        <% console.log("dfgvyhbjnk",cartItem)%>
+                                                        <td class="product-remove"><a href="/deletecart?id=<%= cartItem.product_id._id%>"><i class="ti-trash"></i></a></td>
+
+                                                    </tr>
+                                                <% }); %>
+                                            <% } else { %>
+                                                <tr>
+                                                    <td colspan="6">No items in the cart</td>
+                                                </tr>
+                                            <% } %>
                                         </tbody>
+                                        
+                                        
+                                        <script>
+                                              function updateQuantity(productId, count) {
+  console.log("the count", count);
+
+  // Send a request to update the quantity for the product with productId
+  $.ajax({
+    url: '/updateQuantity',
+    method: 'POST',
+    contentType: 'application/json', // Add this line
+    data: JSON.stringify({ productId, count }), // Modify this line
+  }).then(response => {
+    // Handle response if needed
+  }).catch(error => {
+    console.error('Error:', error);
+  });
+}
+                                            
+                                        
+                                        </script>
+                                        
+                                        
+                                        
+                                        
                                     </table>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-lg-12">
-                                    <div class="cart-shiping-update-wrapper">
-                                        <div class="cart-shiping-update btn-hover">
-                                            <a href="#">Continue Shopping</a>
-                                        </div>
-                                        <div class="cart-clear-wrap">
-                                            <div class="cart-clear btn-hover">
-                                                <button>Update Cart</button>
-                                            </div>
-                                            <div class="cart-clear btn-hover">
-                                                <a href="#">Clear Cart</a>
-                                            </div>
-                                        </div>
-                                    </div>
+                                    
                                 </div>
                             </div>
                         </form>
@@ -392,23 +472,14 @@
                         </div>
                     </div>
                     <div class="col-lg-4 col-md-6 col-12">
-                        <div class="cart-calculate-discount-wrap mb-40">
-                            <h4>Coupon Discount </h4>
-                            <div class="calculate-discount-content">
-                                <p>Enter your coupon code if you have one.</p>
-                                <div class="input-style">
-                                    <input type="text" placeholder="Coupon code">
-                                </div>
-                                <div class="calculate-discount-btn btn-hover">
-                                    <a class="btn theme-color" href="#">Apply Coupon</a>
-                                </div>
-                            </div>
-                        </div>
+                        
                     </div>
+                    <% if (cartProducts && cartProducts.product) { %>
                     <div class="col-lg-4 col-md-12 col-12">
                         <div class="grand-total-wrap">
                             <div class="grand-total-content">
-                                <h3>Subtotal <span>$180.00</span></h3>
+                                <h3>Subtotal <span>₹<%= cartProducts.subtotal%></span></h3>
+
                                 <div class="grand-shipping">
                                     <span>Shipping</span>
                                     <ul>
@@ -420,15 +491,14 @@
                                 <div class="shipping-country">
                                     <p>Shipping to Bangladesh</p>
                                 </div>
-                                <div class="grand-total">
-                                    <h4>Total <span>$185.00</span></h4>
-                                </div>
+                                
                             </div>
                             <div class="grand-total-btn btn-hover">
-                                <a class="btn theme-color" href="checkout.html">Proceed to checkout</a>
+                                <a class="btn theme-color" href="/checkout">Proceed to checkout</a>
                             </div>
                         </div>
                     </div>
+                    <%}%>
                 </div>
             </div>
         </div>
@@ -464,7 +534,7 @@
                                 <div class="footer-widget footer-list mb-40">
                                     <h3 class="footer-title">My Accound</h3>
                                     <ul>
-                                        <li><a href="my-account.html">My Account</a></li>
+                                        <li><a href="/profile">My Account</a></li>
                                         <li><a href="#">Order History</a></li>
                                         <li><a href="wishlist.html">Wish List</a></li>
                                         <li><a href="#">Newsletter</a></li>
@@ -509,7 +579,7 @@
                     <div id="mobile-menu" class="slinky-mobile-menu text-left">
                         <ul>
                             <li>
-                                <a href="#">HOME</a>
+                                <a href="/">HOME</a>
                                 <ul>
                                     <li><a href="index.html">Home version 1 </a></li>
                                     <li><a href="index-2.html">Home version 2</a></li>

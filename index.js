@@ -1,5 +1,5 @@
 // const mongoose = require("mongoose");
-
+const nocache = require('nocache')
 const dotenv=require('dotenv').config()
 const  session = require('express-session')
 const connectDB = require('./server/database/connection')
@@ -21,7 +21,7 @@ app.use(session({
 
 app.use(express.static('public'))
 app.use(express.static('server'))
-
+app.use(nocache());
 app.use((req,res,next)=>{
     res.set('Cache-control','no-store,no-cache');
     next()

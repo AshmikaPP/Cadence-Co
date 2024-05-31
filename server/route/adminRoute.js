@@ -5,7 +5,10 @@ admin_route.use(express.urlencoded({ extended: true }));
 // const upload = require('../../midlewares/upload');
 
 const adminController = require('../controller/adminController')
+const couponController = require('../controller/couponController')
+const offerController = require('../controller/offerController')
 const Auth = require('../midlewares/adminsession')
+
 
 admin_route.set('views','./views/admin');
 
@@ -99,6 +102,55 @@ admin_route.delete('/deleteimage',adminController.deleteimage)
 admin_route.get('/deleteproduct',adminController.deleteproduct)
 
 admin_route.get('/admin/logout',adminController.logout)
+
+admin_route.get('/orderDatas',Auth.isLogout,adminController.orderList)
+
+admin_route.get('/orderAdminview',adminController.orderViewdatas )
+admin_route.post('/updateOrderStatus', adminController.Statusreturn);
+
+admin_route.get('/coupon',Auth.isLogin,couponController.loadCoupon)
+
+admin_route.get('/loadCoupon',couponController.loadCoupon)
+
+admin_route.get('/addCoupon',couponController.loadaddCoupon)
+
+admin_route.post('/loadCoupon',couponController.addCoupon)
+
+admin_route.get('/deletecoupon',couponController.deleteCoupon)
+
+admin_route.get('/loadOffer',offerController.loadOffer)
+
+admin_route.get('/addOffer',offerController.loadaddOffer)
+
+admin_route.get('/offer',offerController.loadOffer)
+
+admin_route.post('/loadOffer',offerController.addOffer )
+
+admin_route.get('/deleteOffer',offerController.deleteOffer)
+
+admin_route.post('/productoffer',offerController.productOffer)
+
+admin_route.post('/categoryOffer',offerController.categoryOffer)
+
+admin_route.get('/applyoffer',offerController.applyOffer)
+
+admin_route.post('/applycategoryOffer',offerController.applyCategoryOffer)
+
+admin_route.post('/removeoffer',offerController.removeCategoryOffer)
+
+admin_route.get('/Salesreport',adminController.salesReport)
+
+admin_route.post('/Salesreport',adminController.salesReportPost)
+
+admin_route.post('/postSalesreport',adminController.salesReportFilter)
+
+
+
+
+
+
+admin_route.post('/removeproductoffer',offerController.removeProductOffer)
+
 
 
 

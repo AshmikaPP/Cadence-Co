@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Offers Page</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .card {
+            border: none;
+            border-radius: 1rem;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .card-body {
+            padding: 2rem;
+        }
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #343a40;
+        }
+        .table {
+            margin-top: 1rem;
+            color: #495057;
+        }
+        .table th {
+            background-color: #e9ecef;
+            font-weight: 600;
+        }
+        .table tbody tr {
+            transition: background-color 0.3s;
+        }
+        .table tbody tr:hover {
+            background-color: #f1f3f5;
+        }
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+            font-weight: 600;
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+        .btn-primary:hover {
+            background-color: #0056b3;
+            border-color: #004085;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="card mt-5">
+        <div class="card-body">
+            <h5 class="card-title">Offers</h5>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th scope="col">Offer name</th>
+                        <th scope="col">Discount percentage</th>
+                        <th scope="col">Activation Date</th>
+                        <th scope="col">Expiry Date</th>
+                    </tr>
+                </thead>
+                <tbody id="offersTableBody">
+                    <!-- Offers will be dynamically inserted here -->
+                    <% for(let i = 0; i < offers.length; i++) { %>
+                        <tr>
+                            <td>
+                                <input type="radio" name="selectedOffer" value="<%= offers[i]._id %>" class="offer-radio">
+                                <input type="hidden" value="<%= categoryId %>" class="category-id">
+                            </td>
+                            <td><%= offers[i].name %></td>
+                            <td><%= offers[i].discount %></td>
+                            <td><%= offers[i].activationdate.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: '2-digit' }).replace(/\//g, '-') %></td>
+                            <td><%= offers[i].expireddate.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: '2-digit' }).replace(/\//g, '-') %></td>
+                        </tr>
+                    <% } %>
+                </tbody>
+            </table>
+            <a href="#" class="btn btn-primary" id="applySelectedCoupon">Apply</a>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap Bundle with Popper -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.getElementById('applySelectedCoupon').addEventListener('click', function() {
+        const selectedOffer = document.querySelector('input[name="selectedOffer"]:checked');
+        if (selectedOffer) {
+            const offerId = selectedOffer.value;
+            const discount = selectedOffer.closest('tr').querySelector('td:nth-child(3)').innerText;
+            const categoryId = selectedOffer.closest('td').querySelector('.category-id').value;
+
+            fetch('/applycategoryOffer', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ offerId, discount, categoryId })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message === 'Category offer updated successfully.') {
+                    swal({
+                        title: "Success",
+                        text: "Offer applied successfully!",
+                        icon: "success"
+                    }).then(() => {
+                        window.location.href = "/loadcategory"; // Redirect to the category page
+                    });
+                } else {
+                    swal({
+                        title: "Error",
+                        text: "Failed to apply offer.",
+                        icon: "error"
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                swal({
+                    title: "Error",
+                    text: "An error occurred while applying the offer.",
+                    icon: "error"
+                });
+            });
+        } else {
+            swal({
+                title: "Warning",
+                text: "Please select an offer to apply.",
+                icon: "warning"
+            });
+        }
+    });
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
+</body>
+</html>
+
+
+
+
+

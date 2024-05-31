@@ -50,6 +50,17 @@
 
 
 <body>
+    <style>
+    .discount-percentage {
+        background-color: #a50b0b; /* Red background */
+        color: white; /* White text */
+        padding: 5px 10px; /* Padding */
+        border-radius: 20px; /* Rounded corners */
+        margin-top: 5px; /* Margin to separate from the price */
+        display: inline-block; /* Ensures the span behaves like a block element */
+    }
+</style>
+    
     <div class="main-wrapper main-wrapper-2">
         <header class="header-area header-responsive-padding header-height-1">
             <div class="header-top d-none d-lg-block bg-gray">
@@ -209,40 +220,12 @@
                 <a class="cart-close" href="#"><i class="pe-7s-close"></i></a>
                 <div class="cart-content">
                     <h3>Shopping Cart</h3>
-                    <ul>
-                        <li>
-                            <div class="cart-img">
-                                <a href="#"><img src="assets/images/cart/cart-1.jpg" alt=""></a>
-                            </div>
-                            <div class="cart-title">
-                                <h4><a href="#">Stylish Swing Chair</a></h4>
-                                <span> 1 × $49.00	</span>
-                            </div>
-                            <div class="cart-delete">
-                                <a href="#">×</a>
-                            </div>
-                        </li>
-                        <li>
-                            <div class="cart-img">
-                                <a href="#"><img src="assets/images/cart/cart-2.jpg" alt=""></a>
-                            </div>
-                            <div class="cart-title">
-                                <h4><a href="#">Modern Chairs</a></h4>
-                                <span> 1 × $49.00	</span>
-                            </div>
-                            <div class="cart-delete">
-                                <a href="#">×</a>
-                            </div>
-                        </li>
-                    </ul>
-                    <div class="cart-total">
-                        <h4>Subtotal: <span>$170.00</span></h4>
-                    </div>
+                    
                     <div class="cart-btn btn-hover">
-                        <a class="theme-color" href="cart.html">view cart</a>
+                        <a class="theme-color" href="/cart">view cart</a>
                     </div>
                     <div class="checkout-btn btn-hover">
-                        <a class="theme-color" href="checkout.html">checkout</a>
+                        <a class="theme-color" href="/checkout">checkout</a>
                     </div>
                 </div>
             </div>
@@ -354,10 +337,41 @@
                                     </div>
                                     <div class="product-content">
                                         <h3><a href="product-details.html"><%= products[i].name %></a></h3>
-                                        <div class="product-price">
-                                            <span class="new-price">$<%= products[i].price %></span>
-                                        </div>
+                                        <% if (products[i].category.categoryoffer != 0 || products[i].productoffer != 0) { %>
+                                            <% if (products[i].category.categoryoffer > products[i].productoffer) { %>
+                                                <!-- Display product price with category offer -->
+                                                <% var discountPercentage = products[i].category.categoryoffer; %>
+                                                <% var discountedPrice = products[i].price * (1 - (discountPercentage / 100)); %>
+                                                <div class="product-price">
+                                                    <span class="original-price">$<%= products[i].price.toFixed(2) %></span>
+                                                    <span class="new-price">$<%= discountedPrice.toFixed(2) %></span>
+                                                    <span class="discount-percentage"><%= discountPercentage %>% </span>
+                                                </div>
+                                            <% } else { %>
+                                                <!-- Display product price with product offer -->
+                                                <% var discountPercentage = products[i].productoffer; %>
+                                                <% var discountedPrice = products[i].price * (1 - (discountPercentage / 100)); %>
+                                                <div class="product-price">
+                                                    <del><span class="original-price">₹<%= products[i].price.toFixed(2) %></span></del>
+                                                    <span class="new-price">₹<%= discountedPrice.toFixed(2) %></span>
+                                                    <span class="discount-percentage"><%= discountPercentage %>% </span>
+                                                </div>
+                                            <% } %>
+                                        <% } else { %>
+                                            <!-- Display regular product price if no offer -->
+                                            <div class="product-price">
+                                                <span class="new-price">₹<%= products[i].price.toFixed(2) %></span>
+                                            </div>
+                                        <% } %>
                                     </div>
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
                                 </div>
                             </div>
                         <% } %>

@@ -55,6 +55,36 @@
                             <span class="text">User list</span>
                         </a>
                     </li>
+                    <li class="menu-item active">
+                        <a class="menu-link" href="/orderDatas">
+                            <i class="icon material-icons md-shopping_cart"></i>
+                            <span class="text">Orders</span>
+                        </a>
+                        
+                    </li>
+                    <li class="menu-item">
+                        <a class="menu-link"  href="/loadCoupon">
+                            <i class="icon material-icons md-pie_chart"></i>
+                            <span class="text">Coupon</span>
+                        </a>
+                    </li>
+                    <li class="menu-item has-submenu">
+                        <a class="menu-link" href="/loadOffer">
+                            <i class="icon material-icons md-monetization_on"></i>
+                            <span class="text">Offers</span>
+                        </a>
+                        <!-- <div class="submenu">
+                            <a href="page-transactions-1.html">Transaction 1</a>
+                            <a href="page-transactions-2.html">Transaction 2</a>
+                        </div> -->
+                    </li>
+                    <li class="menu-item has-submenu ">
+                        <a class="menu-link" href="/Salesreport">
+                            <i class="icon material-icons md-store"></i>
+                            <span class="text">Salesreport</span>
+                        </a>
+
+                    </li>
                    
                     <!-- <li class="menu-item has-submenu"> -->
                         <!-- <a class="menu-link" href="page-orders-1.html">
@@ -416,7 +446,6 @@
             const price = document.getElementById('price').value.trim();
             const stock = document.getElementById('stock').value.trim();
             const imageFiles = document.getElementById('image').files;
-         
     
             // Check if any field contains a space
             if (name.includes(' ')) {
@@ -447,6 +476,21 @@
                 document.getElementById('stockError').innerText = "";
             }
     
+            // Validate if price and stock are greater than zero
+            if (parseFloat(price) <= 0) {
+                document.getElementById('priceError').innerText = "Price must be greater than zero.";
+                return false;
+            } else {
+                document.getElementById('priceError').innerText = "";
+            }
+    
+            if (parseInt(stock) <= 0) {
+                document.getElementById('stockError').innerText = "Stock must be greater than zero.";
+                return false;
+            } else {
+                document.getElementById('stockError').innerText = "";
+            }
+    
             // Validate if at least one image is selected
             if (imageFiles.length === 0) {
                 document.getElementById('imageError').innerText = "Please select at least one image.";
@@ -458,6 +502,7 @@
             return true; // Form is valid
         }
     </script>
+    
     
     </body>
 </html>
