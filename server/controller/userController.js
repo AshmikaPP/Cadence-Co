@@ -10,8 +10,17 @@ const product = require('../model/productModel');
 const userModel = require('../model/userModel');
 const randomstring = require("randomstring");
 const Order = require('../model/orderModel')
-const securePassword = async (password) => {
+const {generateReferralCode} = require('../utilis/refreal')
 
+
+
+
+
+
+
+
+
+const securePassword = async (password) => {
     try {
 
         const passwordHash = await bcrypt.hash(password, 10);
@@ -128,53 +137,87 @@ function otpgenerator() {
     return Math.floor(1000 + Math.random() * 9000);
 }
 
+
+
+
+
+
 const userregister = async (req, res) => {
     try {
+        const { name, email, mobile, password, conformpassword, referralCode } = req.body;
+        const referralCodeuser = generateReferralCode();
+        console.log('1');
 
-        const { name, email, mobile, password, conformpassword } = req.body
-        // if(!name || !mobile){
-        //     return res.render('register')
-        // }
-        console.log('1')
+        const userData = await User.findOne({ email });
 
+        if (userData) {
+            if (userData.is_Verified === 0) {
+                return res.render('register', { message: "User is not verified" });
+            }
+            return res.render('register', { message: "User already exists" });
+        }
 
-        const spassword = await securePassword(req.body.password);
-        
+        if (password !== conformpassword) {
+            return res.render('register', { message: 'Passwords do not match' });
+        }
 
-        console.log("Register email", req.session.email)
-         req.session.email = email
+        let referedBy = null;
+
+        if (referralCode) {
+            referedBy = await User.findOne({ referralCode });
+
+            if (!referedBy) {
+                return res.render('register', { message: "Invalid referral code" });
+            }
+        }
+
+        const spassword = await securePassword(password);
+
         const user = new User({
-            name: name,
-            email: email,
-            mobile: mobile,
-             password: spassword,
-            conformpassword: spassword
-        })
+            name,
+            email,
+            mobile,
+            password: spassword,
+            conformpassword: spassword,
+            referralCode: referralCodeuser,
+            referredBy: referedBy ? referedBy._id : null,
+            wallet: 50 // Add welcome bonus to new user's wallet
+        });
+
         console.log("userdata:", user);
+        await user.save();
+
+        if (referedBy) {
+            referedBy.wallet += 100; // Add referral bonus to referrer's wallet
+            await referedBy.save();
+        }
 
         const Otp = otpgenerator();
-        sendOtp(email, Otp)
+        req.session.email = email;
+
+        sendOtp(email, Otp);
         console.log('email', email);
-        console.log('Otp', Otp)
-        user.save();
+        console.log('Otp', Otp);
 
         const Otpcollecti = new OTPP({
             OTP: Otp,
             email: email
+        });
 
-
-        })
-        console.log('Otpcollection', Otpcollecti)
-
+        console.log('Otpcollection', Otpcollecti);
         await Otpcollecti.save();
 
+        console.log("22222222222222222222222222222222222222222222222222", email);
         res.render('otp', { email });
 
     } catch (error) {
-        console.log(error)
-
+        console.log(error);
+        res.status(500).render('register', { message: 'An error occurred during registration' });
     }
-}
+};
+
+
+  
 
     const verifyLogin = async (req, res) => {
         try {
@@ -206,13 +249,14 @@ const userregister = async (req, res) => {
 
 
     function sendOtp(email, Otp) {
-        // console.log("otp")
-        // console.log("Sendotp")
+        console.log("otp",Otp)
+
+        console.log("Sendotp",email)
         let config = {
             service: 'gmail',
             auth: {
-                user: 'ashmikapp2002@gmail.com',
-                pass: 'uxlcvngachkplerc'
+                user: 'skycrowlove@gmail.com',
+                pass: 'rete eeaa kcdk pbwm'
             }
         }
 
@@ -262,13 +306,14 @@ const userregister = async (req, res) => {
     const Otpverify = async (req, res) => {
         try {
             const Otp = req.body.Otp;
-        
+            console.log("11111111111111111111111",req.body);
             let email=req.body.email
 
             const Otpverification = await OTPP.findOne({ email: req.body.email });
-
+            console.log("33333333333333333333333333333333",Otpverification);
             
             if (Otp == Otpverification.OTP) {
+                console.log("hello");
                 const userid = await User.updateOne({ email: req.body.email }, { is_Verified: 1 });
 
                 console.log(userid,"whfwdiuwbhdwiduwdi  ")
@@ -281,7 +326,7 @@ const userregister = async (req, res) => {
                 res.redirect('/');
                 await OTPP.deleteMany({})
             } else {
-
+                console.log('hai');
                 res.render('otp', { message: "Otp incorrect" },{email});
             }
 
@@ -295,6 +340,7 @@ const userregister = async (req, res) => {
 
         }
     }
+
 
 const forgotpassword = async (req,res) =>{
     try {
@@ -400,46 +446,34 @@ const verifyEmail = async(req,res)=>{
 }
 // userController.js
 
-// const resendotp = async (req, res) => {
-//     try {
-        
-//         const newOtp = otpgenerator();
-//         console.log("newOtp", newOtp);
-//         console.log('email',email);
-//         const email = req.session.email;
 
-//         sendOtp(email, newOtp);
-//         let otpdata = await OTPP.findOne({ email: email })
-//         if (otpdata) {
-//             otpdata.OTP = newOtp;
-//             otpdata = await otpdata.save();
-//         }
-//         else {
-//             otpdata = new OTPP({
-//                 email: email,
-//                 OTP: newOtp
-//             })
-//         }
-//         console.log(otpdata)
-
-//         res.json({ success: true, message: 'OTP resent successfully' });
-//     } catch (error) {
-//         console.error('Error in resendotp:', error);
-//         res.status(500).json({ success: false, message: 'Internal server error' });
-//     }
-// };
 // ---------------------------------------------------------------------------------------------------------
 const resendotp = async (req, res) => {
     try {
         const email = req.body.email;
         const newOtp = Math.floor(1000 + Math.random() * 9000);
+
+        
         await sendOtp(email, newOtp);
+        const otpDocument = await OTPP.findOneAndUpdate(
+            { email: email },       
+            { OTP: newOtp },        
+            { new: true, upsert: true } 
+        );
+
+        console.log('Updated Otp Document', otpDocument);
+
+        console.log("Updated OTP and sent email");
+
         res.sendStatus(200);
     } catch (error) {
+        console.log("Error while resending OTP");
         console.error(error);
+        
         res.sendStatus(500);
     }
 };
+
 // ----------------------------------------------------------------------------------------------------------------
 
 const singleproductdetails = async (req, res) => {
@@ -468,7 +502,7 @@ const Myprofile = async(req, res) => {
 
         const userAddresses = await Address.findOne({ user: userId });
 
-        const orderData = await Order.find({user:userId})
+        const orderData = await Order.find({user:userId}).sort({ date: -1 });
       
         res.render("profile", { user: userdata, userAddresses,orderData  });
 
@@ -494,33 +528,45 @@ const EditProfile = async (req, res) => {
 
 const changeOrderstatus = async(req,res)=>{
     try {
-        const userId = req.session.UserId
-        console.log('orderId',req.query);
-        const orders = await Order.findById({_id:req.query.orderId });
-        console.log(orders.paymentMethod,"888888888888888888888")
-        console.log(orders.status,"2222222222");
+        const userId = req.session.UserId;
+        console.log('orderId', req.body);
+        const orders = await Order.findById(req.body.orderId);
+        const Status = req.body.status;
+        const reason = req.body.reason;
+        console.log(Status,"111111111111111111111111111111111111111111111111111111111111111111111111111");
+        if(Status == 'Pending Return'){
+            orders.returnReason = reason;
+        }
+        await orders.save();
+        console.log(orders.paymentMethod, "888888888888888888888");
+        console.log(orders.status, "2222222222");
         if (orders.paymentMethod == "wallet" || orders.paymentMethod == "cheque" || orders.status == "Delivered") {
             const userData = await User.findByIdAndUpdate(
                 { _id: req.session.UserId }, 
                 { $inc: { wallet: orders.subtotal } },
                 { new: true } 
             );
-            const user = User.findById(userId)
+            const user = await User.findById(userId);
+            
             user.walletHistory.push({
-                date:orders.date,
-                amount:orders.subtotal,
-                discription:"Amount credited for cancel order"
-            })
+                date: orders.date,
+                amount: orders.subtotal,
+                description: "Amount credited for cancel order"
+            });
+            
+            await user.save();
         }
         
         const orderStatus = await Order.findByIdAndUpdate(
-            { _id: req.query.orderId }, 
-        { status: req.query.status }, 
-        { new: true } 
-    );
-    res.redirect('/')
+            { _id: req.body.orderId }, 
+            { status: req.body.status }, 
+            { new: true } 
+        );
+
+        res.status(200).json({ message: 'Order status updated successfully', orderStatus });
     } catch (error) {
-        console.log(error.message)
+        console.log(error.message);
+        res.status(500).json({ message: 'Internal server error' });
     }
 }
 
@@ -548,6 +594,6 @@ module.exports = {
     sendforgetemail,
     tokenGenarator,
     verifyEmail,
-    changeOrderstatus
+    changeOrderstatus,
 
 }

@@ -183,7 +183,7 @@
                                     <tr>
                                         <th>SL. No.</th>
                                             <th>Date</th>
-                                            <th>ID</th>
+                                            
                                             <th>Total Amount</th>
                                             <th>Method</th>
                                             <th>Status</th>
@@ -198,11 +198,12 @@
                                     <td><%= orderData[i].date.toLocaleDateString('en-US', {
                                         year:'numeric', month: 'short' , day: '2-digit'
                                       }).replace(/\//g, '-' )%></td>
-                                    <td><%= orderData[i].orderId%></td>
+                                  
                                     <td><%= orderData[i].subtotal%></td>
                                     <td><%= orderData[i].paymentMethod%></td>
                                     <td><%= orderData[i].status%></td>
-                                    <td><a href="/orderAdminview?id=<%= orderData[i]._id%>"><button class="action-btn">View</button></a></td>
+                                    <td><a href="/orderAdminview?id=<%= orderData[i]._id%>"><button class="action-btn">View</button></a>
+                                        </td>
                                 </tr>
                                     <% } %>
                                     

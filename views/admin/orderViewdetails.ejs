@@ -198,6 +198,7 @@
                                                 <th  >Quantity</th>
                                                 <th  >Total</th>
                                                 <th>Status</th>
+                                                <th></th>
                                                
                                                 <!-- <th> <li class="nav-item dropdown">
                                                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">Change status</a>
@@ -223,8 +224,19 @@
                                                         <td><%= orderViewdetails.product[i].price / orderViewdetails.product[i].quantity %></td>
                                                         <td style="text-align: center;"><%= orderViewdetails.product[i].quantity %></td>
                                                         <td><%= orderViewdetails.product[i].price %></td>
-                                                        <td><%= orderViewdetails.status %></td>
-                                                        <td>
+                                                        <td><%= orderViewdetails.status %>
+                                                            </td>
+                                                            <td>
+                                                                <% if (orderViewdetails.status === 'Pending Return') { %>
+                                                                    <button type="button" class="btn btn-primary" onclick="toggleReasonBox('<%= i %>')">Approve Return</button>
+                    <!-- Reason Box -->
+                    <div id="reasonBox<%= i %>" style="display: none;">
+                        <textarea class="form-control" rows="3"  ><%= orderViewdetails.returnReason %></textarea>
+                        <button type="button" class="btn btn-primary" onclick="submitReason()">Submit</button>
+                                                                    </div>
+                                                                <% } %>
+                                                            </td>
+                                                
                                                             
                                                                
                                                                     <!-- <nav id="navbar-example2" class="navbar navbar-light bg-light px-3">
@@ -290,11 +302,11 @@
                                                 <li><a class="dropdown-item" href="#" data-status="Delivered">Delivered</a></li>
                                                 <li><a class="dropdown-item" href="#" data-status="Cancel">Cancel</a></li>
                                             <% } else if (orderViewdetails.status === 'Delivered') { %>
-                                                <li><a class="dropdown-item" href="#" data-status="Return">Return</a></li>
+                                                
                                              <% } else if (orderViewdetails.status === 'Return') { %>
                                              <% } else if (orderViewdetails.status === 'Cancel') { %>     
                                             <% } %>
-                                            
+                                            <input type="hidden" id="order_id" value="<%= orderViewdetails._id %>">
 
                                         </ul>
                                         
@@ -327,6 +339,40 @@
                 </div>
             </footer>
         </main>
+        <script>
+            function toggleReasonBox(index) {
+                var reasonBox = document.getElementById('reasonBox' + index);
+                if (reasonBox.style.display === 'none') {
+                    reasonBox.style.display = 'block';
+                } else {
+                    reasonBox.style.display = 'none';
+                }
+            }
+        
+            function submitReason() {
+                const orderId = document.getElementById('order_id').value
+                fetch('/updateOrderStatus', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        orderId: orderId,
+                        status: 'Return'
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    window.location.reload()
+                    // Handle success response
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    // Handle error
+                });
+            }
+        </script>
+        
         <script src="assets/js/vendors/jquery-3.6.0.min.js"></script>
         <script src="assets/js/vendors/bootstrap.bundle.min.js"></script>
         <script src="assets/js/vendors/select2.min.js"></script>
@@ -374,6 +420,11 @@
                 });
             }
         </script>
+<script>
+    
+</script>
+
+
         
         
             

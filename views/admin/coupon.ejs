@@ -250,9 +250,9 @@
                             confirmButtonText: 'Yes, delete it!'
                         }).then((result) => {
                             if (result.isConfirmed) {
-                                // If confirmed, make a request to delete the coupon
+                              
                                 fetch(`/deletecoupon?id=${couponId}`, {
-                                    method: 'GET' // Use appropriate method (GET/POST)
+                                    method: 'GET'
                                 })
                                     .then(response => {
                                         if (response.ok) {

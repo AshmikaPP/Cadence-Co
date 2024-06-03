@@ -536,7 +536,7 @@ const orderList = async(req,res)=>{
     try {
         const userId = req.session.admin;
         console.log(userId);
-        const orderData = await Order.find()
+        const orderData = await Order.find().sort({ date: -1 });
         console.log(orderData,"ooooooooooooooooooo");
         res.render("orderDetails",{orderData})
     } catch (error) {
@@ -558,7 +558,7 @@ const orderViewdatas = async(req,res)=>{
 
 const Statusreturn = async(req,res)=>{
    try {
-    
+    console.log("1111111111111111111111111111111",req.body);
     const returnStatus = await Order.findOneAndUpdate(
         { _id: req.body.orderId }, 
         { status: req.body.status }, 
@@ -624,42 +624,41 @@ const salesReportFilter = async (req, res) => {
         const selected = req.body.selected;
         let startDate, endDate;
 
-        // Get today's date without the time component
+       
         const today = new Date();
         today.setHours(0, 0, 0, 0);
 
-        // Determine start and end dates based on selected option
+       
         switch (selected) {
             case 'Today':
                 startDate = today;
-                endDate = new Date(today); // Copy today's date
-                endDate.setDate(endDate.getDate() + 1); // End date is the next day
+                endDate = new Date(today); 
+                endDate.setDate(endDate.getDate() + 1); 
                 break;
             case 'This Week':
                 startDate = new Date();
-                startDate.setDate(startDate.getDate() - 6); // Start from past 6 days
-                endDate = new Date(); // Today
+                startDate.setDate(startDate.getDate() - 6); 
+                endDate = new Date(); 
                 break;
             case 'This Month':
                 startDate = new Date();
-                startDate.setDate(1); // Start from the 1st day of the current month
-                endDate = new Date(); // Today
+                startDate.setDate(1); 
+                endDate = new Date(); 
                 break;
             case 'This Year':
                 startDate = new Date();
-                startDate.setMonth(0); // Start from January
-                startDate.setDate(1); // Start from the 1st day of January
-                endDate = new Date(); // Today
+                startDate.setMonth(0); 
+                startDate.setDate(1); 
+                endDate = new Date(); 
                 break;
             case 'Custom Date Range':
-                // Handle custom date range separately
-                // You can extract start and end dates from req.body accordingly
+                
                 break;
             default:
-                // Handle default case
+                
         }
 
-        // Query orders based on the determined start and end dates
+        
         const orders = await Order.find({
             status: "Delivered",
             date: {
@@ -668,7 +667,7 @@ const salesReportFilter = async (req, res) => {
             }
         }).sort({ date: -1 });
 
-        // Render the sales report with filtered orders
+       
         res.render("salesreport", { orders: orders });
     } catch (error) {
         console.error("Error filtering sales report: ", error.message);

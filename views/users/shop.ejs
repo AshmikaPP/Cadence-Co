@@ -975,20 +975,23 @@ document.getElementById('sortForm').addEventListener('submit', function(event) {
         method: "post",
         data: { Id: productId },
         success: (response) => {
-    console.log(response); // Log the response to check its structure
+    console.log(response);
     if (response.success) {
-        console.log("Product added to wishlist"); // Log a message to confirm success
+        console.log("Product added to wishlist"); 
         Swal.fire({
-            position: "center",
-            icon: "success",
-            title: "Success!",
-            text: "Product added to wishlist.",
-            showConfirmButton: false,
-            timer: 1500,
-        });
-        window.location.href = '/wishlist';
+                    position: "center",
+                    icon: "success",
+                    title: "Success!",
+                    text: "Product added to wishlist.",
+                    showConfirmButton: true,
+                    confirmButtonText: "OK",
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = '/wishlist';
+                    }
+                });
     } else if (response.check) {
-        console.log("Product is already in wishlist"); // Log a message for existing product
+        console.log("Product is already in wishlist"); 
         Swal.fire({
             position: "center",
             icon: "warning",

@@ -249,6 +249,9 @@
                                         <input type="text" placeholder="Coupon Code" id="couponcode" name="couponcode" class="form-control" required/>
                                         <span id="couponCodeError" class="error text-danger"></span>
                                     </div>
+                                    <% if(typeof message !== 'undefined'){ %>
+                                        <h4><%= message %></h4>
+                                      <% } %>
                                     <div class="mb-4">
                                         <label for="discountamount" class="form-label">Discount Amount</label>
                                         <input type="number" placeholder="Discount Amount" id="discountamount" name="discountamount" class="form-control" required/>
@@ -408,7 +411,7 @@
                     nameError.textContent = 'Name cannot be empty.';
                     isValid = false;
                 } else {
-                    nameError.textContent = ''; // Clear any previous error message
+                    nameError.textContent = '';
                 }
     
                 // Validate Coupon Code
@@ -419,7 +422,7 @@
                     couponCodeError.textContent = 'Coupon Code has already been used.';
                     isValid = false;
                 } else {
-                    couponCodeError.textContent = ''; // Clear any previous error message
+                    couponCodeError.textContent = ''; 
                 }
     
                 // Validate Discount Amount

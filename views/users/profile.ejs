@@ -363,6 +363,10 @@ button[type="submit"]:hover {
                                                         <label for="email">Email:</label>
                                                         <input type="email" id="email" name="email" value="<%= user.email %>" required>
                                                     </div>
+                                                    <div class="form-group">
+                                                        <label for="code">Referal Code:</label>
+                                                        <h6><%= user.referralCode %></h6>
+                                                    </div>
                                                     <!-- Add more fields as needed -->
                                             
                                                     <button type="submit">Update Profile</button>
@@ -400,11 +404,7 @@ button[type="submit"]:hover {
                                                                 <td><%= orderData[i].paymentMethod%></td>
                                                                 <td><%= orderData[i].status%></td>
                                                                 <td><a href="/orderView?id=<%= orderData[i]._id%>"><button class="action-btn">View</button></a></td>
-                                                                <% if(orderData[i].status === 'delivered'){ %>
-                                                                    <td><button>Return</button></td>
-                                                               <% }else{ %>
-                                                               <td><button>Cancel</button></td> 
-                                                              <% } %>
+                                                               
                                                                 
                                                             </tr>
                                                             <% } %>
@@ -433,7 +433,7 @@ button[type="submit"]:hover {
                                     
                                                     <!-- Toggle Button for Wallet History -->
                                                     <div class="d-flex justify-content-end">
-                                                        <button id="toggleHistory" class="btn btn-info d-block my-2">Toggle Wallet History</button>
+                                                        <button id="toggleHistory" class="btn btn-info d-block my-2"> Wallet History</button>
                                                     </div>
                                     
                                                     <!-- Wallet History Section -->
@@ -447,6 +447,17 @@ button[type="submit"]:hover {
                                                                     <th>Amount</th>
                                                                 </tr>
                                                             </thead>
+                                                            <tbody>
+                                                                <tbody>
+                                                                    <% user.walletHistory.forEach(function(history) { %>
+                                                                        <tr>
+                                                                            <td><%= new Date(history.date).toLocaleDateString() %></td>
+                                                                            <td><%= history.description %></td>
+                                                                            <td>₹<%= history.amount %></td>
+                                                                        </tr>
+                                                                    <% }); %>
+                                                                </tbody>
+                                                            </tbody>
                                                             
                                                         </table>
                                                     </div>

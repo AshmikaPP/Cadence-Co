@@ -33,7 +33,7 @@ user_route.post('/loginverification',userController.verifyLogin)
 
 user_route.post('/otp',userController.Otpverify)
 
-user_route.post('/resend',userController.resendotp)
+// user_route.post('/resend',userController.resendotp)
 
 user_route.get('/singleproduct/:ProductId',userController.singleproductdetails)
 
@@ -94,7 +94,7 @@ user_route.get('/remove',cartController.removeWishlist)
 user_route.post('/checkoutaddaddress',cartController.checkoutaddaddress)
 user_route.get('/loadcheckouteditaddress',cartController.loadcheckouteditaddress)
 user_route.post('/checkouteditaddress',cartController.checkoutEditaddress)
-user_route.get('/changeOrderstatus',userController.changeOrderstatus)
+user_route.post('/changeOrderstatus',userController.changeOrderstatus)
 user_route.post('/verifypayment',cartController.verifyPayment)
 
 

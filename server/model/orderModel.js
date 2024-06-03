@@ -84,6 +84,9 @@ const orderSchema = new mongoose.Schema({
     status:{
         type:String
     },
+    returnReason:{
+        type:String
+    }
 });
 
 module.exports = mongoose.model('Order',orderSchema);
