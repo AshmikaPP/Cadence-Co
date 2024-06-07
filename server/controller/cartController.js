@@ -465,9 +465,16 @@ const placeOrder = async (req, res) => {
           message: "Insufficient balance in wallet",
         });
       } else {
+        const walletdata = {
+          date:new Date(),
+          amount:-cart.subtotal,
+          description:"by using wallet amount the order has been placed"
+        }
         await User.findByIdAndUpdate(
           { _id: userId },
-          { $inc: { wallet: -cart.subtotal } },
+          { $inc: { wallet: -cart.subtotal },
+          $push:{walletHistory:walletdata}},
+          
           { new: true }
         );
       }

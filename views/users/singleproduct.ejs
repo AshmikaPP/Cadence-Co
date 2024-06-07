@@ -203,35 +203,8 @@
                 <a class="cart-close" href="#"><i class="pe-7s-close"></i></a>
                 <div class="cart-content">
                     <h3>Shopping Cart</h3>
-                    <ul>
-                        <li>
-                            <div class="cart-img">
-                                <a href="#"><img src="/assets/images/cart/cart-1.jpg" alt=""></a>
-                            </div>
-                            <div class="cart-title">
-                                <h4><a href="#">Stylish Swing Chair</a></h4>
-                                <span> 1 × $49.00	</span>
-                            </div>
-                            <div class="cart-delete">
-                                <a href="#">×</a>
-                            </div>
-                        </li>
-                        <li>
-                            <div class="cart-img">
-                                <a href="#"><img src="/assets/images/cart/cart-2.jpg" alt=""></a>
-                            </div>
-                            <div class="cart-title">
-                                <h4><a href="#">Modern Chairs</a></h4>
-                                <span> 1 × $49.00	</span>
-                            </div>
-                            <div class="cart-delete">
-                                <a href="#">×</a>
-                            </div>
-                        </li>
-                    </ul>
-                    <div class="cart-total">
-                        <h4>Subtotal: <span>$170.00</span></h4>
-                    </div>
+                    
+                   
                     <div class="cart-btn btn-hover">
                         <a class="theme-color" href="cart.html">view cart</a>
                     </div>
@@ -360,36 +333,28 @@
                                 </div>
                                 <span>( 1 Customer Review )</span>
                             </div>
-                            <div class="product-color product-color-active product-details-color">
-                                <span>Color :</span>
-                                <ul>
-                                    <li><a title="Pink" class="pink" href="#">pink</a></li>
-                                    <li><a title="Yellow" class="active yellow" href="#">yellow</a></li>
-                                    <li><a title="Purple" class="purple" href="#">purple</a></li>
-                                </ul>
-                            </div>
+
                             <div class="product-details-action-wrap">
-                                <div class="product-quality">
-                                    <input class="cart-plus-minus-box input-text qty text" name="qtybutton" value="1">
-                                </div>
+                               
                                 <div class="single-product-cart btn-hover">
                                     <a href="#">Add to cart</a>
                                 </div>
                                 <div class="single-product-wishlist">
                                     <a title="Wishlist" href="wishlist.html"><i class="pe-7s-like"></i></a>
                                 </div>
-                                <div class="single-product-compare">
+                                <!-- <div class="single-product-compare">
                                     <a title="Compare" href="#"><i class="pe-7s-shuffle"></i></a>
-                                </div>
+                                </div> -->
                             </div>
                             <div class="product-details-meta">
                                 <ul>
-                                    <li><span class="title">SKU:</span> Ch-256xl</li>
+                                    <!-- <li><span class="title">SKU:</span> Ch-256xl</li> -->
                                     <li><span class="title">Category:</span>
-                                        <ul>
-                                            <li><a href="#">Office</a>,</li>
-                                            <li><a href="#">Home</a></li>
-                                        </ul>
+                                        
+                                            <ul>
+                                                    <%= Product.category.name %>                                 
+                                            </ul>
+                                        
                                     </li>
                                     <li><span class="title">Tags:</span>
                                         <ul class="tag">
@@ -398,13 +363,13 @@
                                     </li>
                                 </ul>
                             </div>
-                            <div class="social-icon-style-4">
+                            <!-- <div class="social-icon-style-4">
                                 <a href="#"><i class="fa fa-facebook"></i></a>
                                 <a href="#"><i class="fa fa-dribbble"></i></a>
                                 <a href="#"><i class="fa fa-pinterest-p"></i></a>
                                 <a href="#"><i class="fa fa-twitter"></i></a>
                                 <a href="#"><i class="fa fa-linkedin"></i></a>
-                            </div>
+                            </div> -->
                         </div>
                     </div>
                 </div>
@@ -516,7 +481,7 @@
                 </div>
             </div>
         </div>
-        <div class="related-product-area pb-95">
+        <!-- <div class="related-product-area pb-95">
             <div class="container">
                 <div class="section-title-2 st-border-center text-center mb-75" data-aos="fade-up" data-aos-delay="200">
                     <h2>Related Products</h2>
@@ -658,7 +623,7 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div> -->
         <footer class="footer-area">
             <div class="bg-gray-2">
                 <div class="container">

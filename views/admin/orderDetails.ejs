@@ -36,39 +36,31 @@
                         </a>
                     </li>
                     <li class="menu-item has-submenu">
-                        <a class="menu-link" href="page-products-list.html">
+                        <a class="menu-link" href="/loadproduct">
                             <i class="icon material-icons md-shopping_bag"></i>
                             <span class="text">Products</span>
                         </a>
                         <div class="submenu">
-                            <a href="page-products-list.html">Product List</a>
-                            <a href="page-products-grid.html">Product grid</a>
-                            <a href="page-products-grid-2.html">Product grid 2</a>
-                            <a href="page-categories.html">Categories</a>
-                        </div>
+                       
                     </li>
-                    <li class="menu-item has-submenu active">
-                        <a class="menu-link" href="page-orders-1.html">
-                            <i class="icon material-icons md-shopping_cart"></i>
-                            <span class="text">Orders</span>
+                    <li class="menu-item">
+                        <a class="menu-link" href="/loadcategory">
+                            <i class="icon material-icons md-comment"></i>
+                            <span class="text">Categoty</span>
                         </a>
-
                     </li>
-                    
-                    
-                    
-                    <li class="menu-item has-submenu">
-                        <a class="menu-link" href="#">
+                    <li class="menu-item ">
+                        <a class="menu-link" href="/loaduser">
                             <i class="icon material-icons md-person"></i>
                             <span class="text">User list</span>
                         </a>
-                        
                     </li>
-                    <li class="menu-item">
-                        <a class="menu-link" href="page-reviews.html">
-                            <i class="icon material-icons md-comment"></i>
-                            <span class="text">Category</span>
+                    <li class="menu-item active">
+                        <a class="menu-link" href="/orderDatas">
+                            <i class="icon material-icons md-shopping_cart"></i>
+                            <span class="text">Orders</span>
                         </a>
+                        
                     </li>
                     <li class="menu-item">
                         <a class="menu-link"  href="/loadCoupon">
@@ -76,13 +68,23 @@
                             <span class="text">Coupon</span>
                         </a>
                     </li>
-                    
-                </ul>
-                <hr />
-                <ul class="menu-aside">
-                    
+                    <li class="menu-item has-submenu">
+                        <a class="menu-link" href="/loadOffer">
+                            <i class="icon material-icons md-monetization_on"></i>
+                            <span class="text">Offers</span>
+                        </a>
+                        <!-- <div class="submenu">
+                            <a href="page-transactions-1.html">Transaction 1</a>
+                            <a href="page-transactions-2.html">Transaction 2</a>
+                        </div> -->
+                    </li>
+                    <li class="menu-item has-submenu ">
+                        <a class="menu-link" href="/Salesreport">
+                            <i class="icon material-icons md-store"></i>
+                            <span class="text">Salesreport</span>
+                        </a>
 
-                </ul>
+                    </li>
                 <br />
                 <br />
             </nav>
@@ -220,14 +222,23 @@
                 <div class="pagination-area mt-15 mb-50">
                     <nav aria-label="Page navigation example">
                         <ul class="pagination justify-content-start">
-                            <li class="page-item active"><a class="page-link" href="#">01</a></li>
-                            <li class="page-item"><a class="page-link" href="#">02</a></li>
-                            <li class="page-item"><a class="page-link" href="#">03</a></li>
-                            <li class="page-item"><a class="page-link dot" href="#">...</a></li>
-                            <li class="page-item"><a class="page-link" href="#">16</a></li>
-                            <li class="page-item">
-                                <a class="page-link" href="#"><i class="material-icons md-chevron_right"></i></a>
-                            </li>
+                            <% if(currentPage > 1) { %>
+                                <li class="page-item">
+                                    <a class="page-link" href="?page=<%= currentPage - 1 %>">&laquo; Previous</a>
+                                </li>
+                            <% } %>
+                
+                            <% for(let i = 1; i <= totalPages; i++) { %>
+                                <li class="page-item <%= currentPage === i ? 'active' : '' %>">
+                                    <a class="page-link" href="?page=<%= i %>"><%= i %></a>
+                                </li>
+                            <% } %>
+                
+                            <% if(currentPage < totalPages) { %>
+                                <li class="page-item">
+                                    <a class="page-link" href="?page=<%= currentPage + 1 %>">Next &raquo;</a>
+                                </li>
+                            <% } %>
                         </ul>
                     </nav>
                 </div>

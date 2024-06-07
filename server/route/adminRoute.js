@@ -140,16 +140,12 @@ admin_route.post('/removeoffer',offerController.removeCategoryOffer)
 
 admin_route.get('/Salesreport',adminController.salesReport)
 
-admin_route.post('/Salesreport',adminController.salesReportPost)
+admin_route.post('/Salesreport',adminController.salesReportFilter)
 
-admin_route.post('/postSalesreport',adminController.salesReportFilter)
-
-
-
-
-
-
+// admin_route.post('/postSalesreport',adminController.salesReportFilter)
 admin_route.post('/removeproductoffer',offerController.removeProductOffer)
+
+admin_route.get('/dashboard',Auth.isLogout,adminController.adminDashboard)
 
 
 

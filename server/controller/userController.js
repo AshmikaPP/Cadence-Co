@@ -79,9 +79,8 @@ const LoadShop = async (req, res) => {
     try {
         const CategoryData = await category.find();
         let query = { is_Listed: true };
-        
-
         let sortOption = {};
+        
         switch (req.query.sort) {
             case "3": 
                 sortOption = { name: 1 };
@@ -96,29 +95,37 @@ const LoadShop = async (req, res) => {
                 sortOption = { price: -1 };
                 break;
             default:
-               
                 break;
         }
   
-        
         if (req.query.category) {
             query.category = req.query.category;
         }
   
-      
         const searchQuery = req.query.search;
         if (searchQuery) {
             query.name = { $regex: new RegExp(searchQuery, 'i') };
         }
   
-      
-        const products = await product.find(query).populate('category').sort(sortOption);
+        const pageSize = 6; // Number of products per page
+        const currentPage = parseInt(req.query.page) || 1;
+        const totalProducts = await product.countDocuments(query);
+        const totalPages = Math.ceil(totalProducts / pageSize);
+        const skip = (currentPage - 1) * pageSize;
+        
+        const products = await product.find(query)
+            .populate('category')
+            .sort(sortOption)
+            .skip(skip)
+            .limit(pageSize);
   
-        res.render('shop', { products, CategoryData, searchQuery });
+        res.render('shop', { products, CategoryData, searchQuery, currentPage, totalPages });
     } catch (error) {
         console.log(error);
+        res.status(500).send("Internal Server Error");
     }
 };
+
 
 
 
@@ -479,12 +486,13 @@ const resendotp = async (req, res) => {
 const singleproductdetails = async (req, res) => {
     try {
 
+
         const productid = req.params.ProductId
         
 
-        const Product = await product.findOne({ _id: productid })
+        const Product = await product.findOne({ _id: productid }).populate('category')
        
-        res.render('singleproduct', { Product })
+        res.render('singleproduct', { Product  })
 
 
     } catch (error) {

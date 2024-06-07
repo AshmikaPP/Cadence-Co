@@ -154,52 +154,16 @@
                 <div class="card mb-4">
                     <header class="card-header">
                         <div class="row gx-3 align-items-center">
-                            <form action="/Salesreport" method="post">
+                            <form action="/postSalesreport" method="post">
                             <div class="col-lg-4 mr-3 col-md-6">
                                 <div class="input-group">
-                                    <%if(selected == 'All'){%>
-                                        <select name="selected" class="form-select" id="dateRange" onchange="pagination(value)">
-                                            <option>All</option>
-                                            <option>Today</option>
-                                            <option>This Week</option>
-                                            <option>This Month</option>
-                                            <option>This Year</option>
-                                            
-                                        </select>
-                                        <%}else if(selected == 'Today'){%>
-                                            <select name="selected" class="form-select" id="dateRange" onchange="pagination(value)">
-                                                <option>Today</option>
-                                                <option>All</option>
-                                                <option>This Week</option>
-                                                <option>This Month</option>
-                                                <option>This Year</option>
-                                            </select>
-                                            <%}else if(selected == 'This Week'){%>
-                                                <select name="selected" class="form-select" id="dateRange" onchange="pagination(value)">
-                                                    <option>This Week</option>
-                                                    <option>All</option>
-                                                    <option>Today</option>
-                                                    <option>This Month</option>
-                                                    <option>This Year</option>
-                                                </select>
-                                                <%}else if(selected == 'This Month'){%>
-                                                    <select name="selected" class="form-select" id="dateRange" onchange="pagination(value)">
-                                                        <option>This Month</option>
-                                                        <option>All</option>
-                                                        <option>Today</option>
-                                                        <option>This Week</option>
-                                                        <option>This Year</option>
-                                                    </select>
-                                                    <%}else if(selected == 'This Year'){%>
-                                                        <select name="selected" class="form-select" id="dateRange" onchange="pagination(value)">
-                                                            <option>This Year</option>
-                                                            <option>All</option>
-                                                            <option>Today</option>
-                                                            <option>This Week</option>
-                                                            <option>This Month</option>
-                                                        </select>
-                                                        <%}%>
-                                 
+                                    <select name="selected" class="form-select" id="dateRange">
+                                        <option>Today</option>
+                                        <option>This Week</option>
+                                        <option>This Month</option>
+                                        <option>This Year</option>
+                                        <option>Custom Date Range</option>
+                                    </select>
                                     <button id="applyDateRangeButton" type="submit" class="btn btn-primary">Apply</button>
                                 </div>
                             </div>
@@ -210,7 +174,6 @@
                                         <input type="date" name="startDate" id="startDate" class="form-control" placeholder="Select Start Date" />
                                     </div>
                                     <div class="col-lg-3 col-md-4">
-                                        <input type="hidden" value="customDate" name="selected">
                                         <input type="date" name="endDate" id="endDate" class="form-control" placeholder="Select End Date" />
                                     </div>
                                     <div class="col-auto">
@@ -270,28 +233,24 @@
                     <!-- card-body end// -->
                 </div>
                 <!-- card end// -->
-                          <nav class="pagination-container" style="display: flex; justify-content: center; width: 100%;">
-                    <ul class="pagination">
-                        <% if (currentPage > 1) { %>
+                <div class="pagination-area mt-15 mb-50">
+                    <nav aria-label="Page navigation example">
+                        <ul class="pagination justify-content-start">
+                            <% for (let i = 1; i <= totalPages; i++) { %>
+                                <li class="page-item <%= i == currentPage ? 'active' : '' %>">
+                                    <a class="page-link" href="#" onclick="loadPage(<%= i %>)"><%= i %></a>
+                                </li>
+                            <% } %>
+                            <% if (totalPages > 5) { %>
+                                <li class="page-item"><a class="page-link dot" href="#">...</a></li>
+                                <li class="page-item"><a class="page-link" href="#" onclick="loadPage(<%= totalPages %>)"><%= totalPages %></a></li>
+                            <% } %>
                             <li class="page-item">
-                                <a href="?page=<%= currentPage - 1 %>" class="page-link">Prev</a>
+                                <a class="page-link" href="#" onclick="loadPage(<%= currentPage + 1 %>)"><i class="material-icons md-chevron_right"></i></a>
                             </li>
-                        <% } %>
-                
-                        <% for (let i = 1; i <= totalPages; i++) { %>
-                            <li class="page-item <%= i === currentPage ? 'active' : '' %>">
-                                <a href="?page=<%= i %>" class="page-link"><%= i %></a>
-                            </li>
-                        <% } %>
-                
-                        <% if (currentPage < totalPages) { %>
-                            <li class="page-item">
-                                <a href="?page=<%= currentPage + 1 %>" class="page-link">Next</a>
-                            </li>
-                        <% } %>
-                    </ul>
-                </nav>
-                
+                        </ul>
+                    </nav>
+                </div>
                 
                 <div class="col-auto">
                     <button name="download" id="download" type="submit" class="btn btn-primary">PDF Download</button>
@@ -359,23 +318,6 @@
                 </div>
             </footer>
         </main>
-        <!-- <script>
-            function pagination(val){
-
-var queryString = window.location.search;
-
-var params = new URLSearchParams(queryString);
-params.delete('pagination');
-
-params.append('pagination',val);
-
-var newQueryString = params.toString();
-var newUrl = `/Salesreport?${newQueryString}`;
-
-window.location.href = newUrl;
-
-}
-        </script> -->
         <script>
             function loadPage(page) {
                 const form = document.createElement('form');
@@ -404,7 +346,6 @@ window.location.href = newUrl;
                 form.submit();
             }
         </script>
-       
         <script src="assets/js/vendors/jquery-3.6.0.min.js"></script>
         <script src="assets/js/vendors/bootstrap.bundle.min.js"></script>
         <script src="assets/js/vendors/select2.min.js"></script>

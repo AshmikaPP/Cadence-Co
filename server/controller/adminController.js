@@ -221,18 +221,33 @@ const posteditcategory = async (req, res) => {
     }
 };
 
-const Loadproduct = async (req,res)=>{
+const Loadproduct = async (req, res) => {
     try {
-        const Product = await product.find().populate("category")
-        const offers = await Offer.find()
-        console.log(Product,"category name from the product")
+        const page = parseInt(req.query.page) || 1; // Current page, default: 1
+        const limit = 10; // Products per page
+        const skip = (page - 1) * limit; // Number of products to skip
 
-        res.render("product",{ Product,offers})
+        const totalProducts = await product.countDocuments();
+        const totalPages = Math.ceil(totalProducts / limit);
+
+        const Product = await product.find()
+                                      .populate("category")
+                                      .skip(skip)
+                                      .limit(limit);
+
+        const offers = await Offer.find();
+
+        res.render("product", {
+            Product,
+            offers,
+            currentPage: page,
+            totalPages
+        });
     } catch (error) {
-        console.log(error.message)
+        console.log(error.message);
+        res.status(500).send("Internal Server Error");
     }
-
-}
+};
 const LoadAddProduct= async (req,res)=>{
     try {
 
@@ -532,17 +547,34 @@ const logout = async (req,res)=>{
     }
 }
 
-const orderList = async(req,res)=>{
+const orderList = async (req, res) => {
     try {
         const userId = req.session.admin;
         console.log(userId);
-        const orderData = await Order.find().sort({ date: -1 });
-        console.log(orderData,"ooooooooooooooooooo");
-        res.render("orderDetails",{orderData})
+
+        const page = parseInt(req.query.page) || 1;
+        const limit = 10; // Number of orders per page
+        const skip = (page - 1) * limit;
+
+        const orderCount = await Order.countDocuments();
+        const orderData = await Order.find()
+                                     .sort({ date: -1 })
+                                     .skip(skip)
+                                     .limit(limit);
+
+        const totalPages = Math.ceil(orderCount / limit);
+
+        console.log(orderData, "ooooooooooooooooooo");
+        res.render("orderDetails", {
+            orderData,
+            currentPage: page,
+            totalPages: totalPages
+        });
     } catch (error) {
-        console.log(error.message)
+        console.log(error.message);
     }
-}
+};
+
 
 const orderViewdatas = async(req,res)=>{
     try {
@@ -574,12 +606,21 @@ const Statusreturn = async(req,res)=>{
 
 const salesReport = async (req, res) => {
     try {
-        console.log(req.query,"yyyyyyyyyyyyyyyyyyyyyy")
+
+        console.log(req.query,"yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy")
         const lateDate = new Date("2024-01-26");
-
-      
+        const pagination = req.query.pagination
+        const page = req.query.page ? parseInt(req.query.page) : 1;
+        const limit = 10;
+        const skip = (page - 1) * limit;
+       const startDate = new Date()
         const endDate = new Date();
-
+        const totalOrders = await Order.countDocuments({
+            status: "Delivered",
+            date: {
+                $lte: new Date(endDate)
+            }
+        });
        
         const orders = await Order.find({
             status: "Delivered",
@@ -587,10 +628,27 @@ const salesReport = async (req, res) => {
                 $gte: lateDate,
                 $lte: endDate
             }
-        }).sort({ date: -1 });
+        })
+        .sort({ date: -1 })
+        .skip(skip)
+        .limit(limit);
+       
+        const totalPages = Math.ceil(totalOrders / limit);
+
+        const startIndex = (page -1) * limit;
 
         console.log("Fetched Orders: ", orders);
-        res.render("salesreport", { orders: orders });
+        res.render("salesreport", { orders: orders,
+            totalPages,
+            currentPage: page,
+            nextPage: page < totalPages ? page + 1 : totalPages,
+            prevPage: page > 1 ? page - 1 : 1,
+            startIndex: startIndex,  
+            startDate:startDate,
+            endDate:endDate,
+            req,
+            selected:'Today'
+         });
     } catch (error) {
         console.error("Error fetching sales report: ", error.message);
         res.status(500).send("Internal Server Error");
@@ -598,84 +656,241 @@ const salesReport = async (req, res) => {
 };
 
 
-const salesReportPost = async (req, res) => {
-    try {
-       console.log('111111111111111111111111111111111',req.body);
-       const startDate = req.body.startDate
-       const endDate = req.body.endDate
-        const orders = await Order.find({
-            status: "Delivered",
-            date: {
-                $gte: startDate,
-                $lte: endDate
-            }
-        }).sort({ date: -1 });
+// const salesReportPost = async (req, res) => {
+//     try {
+//         console.log('Request Body:', req.body);
+//         const page = req.query.page ? parseInt(req.query.page) : 1;
+//         const limit = 10;
+//         const skip = (page - 1) * limit;
+//         const totalOrders = await Order.countDocuments({
+//             status: "Delivered",
+//             date: {
+//                 $gte: new Date(startDate),
+//                 $lte: new Date(endDate)
+//             }
+//         });
 
-        console.log("Fetched Orders: ", orders);
-        res.render("salesreport", { orders: orders });
-    } catch (error) {
-        console.error("Error fetching sales report: ", error.message);
-        res.status(500).send("Internal Server Error");
-    }
-};
+//         const totalPages = Math.ceil(totalOrders / limit);
+
+//         const startIndex = (page -1) * limit;
+//           console.log("Total Pages:", totalPages); // Add this line
+//         const orders = await Order.find({
+//             status: "Delivered",
+//             date: {
+//                 $gte: new Date(startDate),
+//                 $lte: new Date(endDate)
+//             }
+//         })
+//         .sort({ date: -1 })
+//         .skip(skip)
+//         .limit(limit);
+
+//         console.log("Fetched Orders: ", orders);
+//         res.render("salesreport" ,{ 
+//             orders: orders, 
+//             totalPages,
+//             currentPage: page,
+//             nextPage: page < totalPages ? page + 1 : totalPages,
+//             prevPage: page > 1 ? page - 1 : 1,
+//             startIndex: startIndex,  
+//             req,
+//             startDate: startDate,
+//             endDate: endDate,
+//             selectedData:'Today'
+//         });
+//     } catch (error) {
+//         console.error("Error fetching sales report: ", error.message);
+//         res.status(500).send("Internal Server Error");
+//     }
+// };
+
+
+
 
 const salesReportFilter = async (req, res) => {
     try {
-        const selected = req.body.selected;
-        let startDate, endDate;
+        console.log("Filter Request Body:1111111111111111111111111111111111111111111111111111111111111111111111111", req.body);
 
-       
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
+        const selected = req.body.selected || 'All';
+        const page = req.query.page ? parseInt(req.query.page) : 1;
+        const limit = 10;
+        const skip = (page - 1) * limit;
 
-       
+        let startDate = new Date();
+        let endDate = new Date();
+
         switch (selected) {
             case 'Today':
-                startDate = today;
-                endDate = new Date(today); 
-                endDate.setDate(endDate.getDate() + 1); 
+                startDate.setHours(0, 0, 0, 0);
+                endDate.setHours(23, 59, 59, 999);
                 break;
             case 'This Week':
-                startDate = new Date();
-                startDate.setDate(startDate.getDate() - 6); 
-                endDate = new Date(); 
+                startDate.setDate(startDate.getDate() - startDate.getDay());
+                startDate.setHours(0, 0, 0, 0);
+                endDate.setDate(endDate.getDate() + (6 - endDate.getDay()));
+                endDate.setHours(23, 59, 59, 999);
                 break;
             case 'This Month':
-                startDate = new Date();
-                startDate.setDate(1); 
-                endDate = new Date(); 
+                startDate.setDate(1);
+                startDate.setHours(0, 0, 0, 0);
+                endDate = new Date(startDate.getFullYear(), startDate.getMonth() + 1, 0, 23, 59, 59, 999);
                 break;
             case 'This Year':
-                startDate = new Date();
-                startDate.setMonth(0); 
-                startDate.setDate(1); 
-                endDate = new Date(); 
+                startDate = new Date(startDate.getFullYear(), 0, 1);
+                startDate.setHours(0, 0, 0, 0);
+                endDate = new Date(startDate.getFullYear(), 11, 31, 23, 59, 59, 999);
                 break;
-            case 'Custom Date Range':
-                
+            case 'customDate':
+                startDate = new Date(req.body.startDate);
+                endDate = new Date(req.body.endDate);
+                endDate.setHours(23, 59, 59, 999);
                 break;
             default:
-                
+                startDate = new Date(startDate.getFullYear(), 0, 1);
+                startDate.setHours(0, 0, 0, 0);
+                endDate = new Date(startDate.getFullYear(), 11, 31, 23, 59, 59, 999);
         }
 
-        
+        const totalOrders = await Order.countDocuments({
+            status: "Delivered",
+            date: {
+                $gte: startDate,
+                $lte: endDate
+            }
+        });
+
         const orders = await Order.find({
             status: "Delivered",
             date: {
                 $gte: startDate,
                 $lte: endDate
             }
-        }).sort({ date: -1 });
+        })
+        .sort({ date: -1 })
+        .skip(skip)
+        .limit(limit);
 
-       
-        res.render("salesreport", { orders: orders });
+        const totalPages = Math.ceil(totalOrders / limit);
+
+        res.render("salesreport", {
+            orders: orders,
+            totalPages: totalPages,
+            currentPage: page,
+            nextPage: page < totalPages ? page + 1 : totalPages,
+            prevPage: page > 1 ? page - 1 : 1,
+            startDate: startDate,
+            endDate: endDate,
+            selected
+        });
     } catch (error) {
         console.error("Error filtering sales report: ", error.message);
         res.status(500).send("Internal Server Error");
     }
 };
 
+const adminDashboard = async(req,res)=>{
+    try {
+        const userDashboard = await Users.countDocuments();
+        const productDashboard = await product.countDocuments();
+        const categoryDashboard = await category.countDocuments();
+        const orderDashboard = await Order.countDocuments();
+        const categoryList = await category.find({is_Listed:true});
+        const productList = await product.find({is_Listed:true});
+        const orderlist = await Order.find({status:"Delivered"});
+        const salesStatus = await Order.find({status:"Delivered"})
+        .sort({date:-1})
+        .limit(3)
+        const weeklysale = await Order.aggregate([
+            {
+                $match:{
+                    date:{
+                        $gte:new Date(new Date().setDate(new Date().getDate()-7)),
+                    },
+                },
+            },
+            {$group:{_id:"$_id",subtotal:{$sum:"$subtotal"}}},
+        ]);
+        const weeklyearnings = weeklysale.reduce(
+            (sum,order)=>sum+order.subtotal,
+            0
+        )
+        const monthlysale = await Order.aggregate([
+            {
+                $match:{
+                    date:{
+                        $gte:new Date(new Date().setMonth(new Date().getMonth()-1)),
+                    },
+                },
+            },
+            {
+                $group:{
+                    _id:{$month:"$date"},
+                    suntotal:{$sum:"$subtotal"},
+                },
+            },
+        ]);
+        const monthlyearnings = monthlysale.reduce(
+            (sum,order)=>sum+order.subtotal,
+            0
+        )
+        const monthlyUserData = await Users.aggregate([
+            {
+                $match:{
+                    createdAt:{
+                        $gte:new Date(new Date().setMonth(new Date().getMonth()-1)),
+                    },
+                },
+            },
+            {$group:{_id:"$_id",count:{$sum:1}}},
+        ])
+        const monthlyOrderData = await Order.aggregate([
+            {
+                $match:{
+                    date:{
+                        $gte:new Date(new Date().setMonth(new Date().getMonth()-1)),
+                    },
+                },
+            },
+            {
+                $group:{
+                    _id:{$month:"$date"},
+                    count:{$sum:1},
+                },
+            },
+        ]);
+        const yearlysale = await Order.aggregate([
+            {
+                $match:{
+                    date:{
+                        $gte:new Date(
+                            new Date().setFullYear(new Date().getFullYear()-1)
+                        ),
+                    },
+                },
+            },
+            {$group:{_id:"$_id",subtotal:{$sum:"$subtotal"}}},
+        ]);
+        const yearlyearnings = yearlysale.reduce(
+            (sum,order)=>sum+order.subtotal,
+            0
+        )
+        
+        res.render('index',{
+            weeklysale,
+            weeklyearnings,
+            monthlysale,
+            monthlyearnings,
+            monthlyUserData,
+            monthlyOrderData,
+            yearlysale,
+            yearlyearnings
 
+        })
+        
+    } catch (error) {
+        console.log(error.message);
+    }
+}
 
 
 
@@ -710,8 +925,9 @@ module.exports = {
     orderViewdatas,
     Statusreturn,
     salesReport,
-    salesReportPost,
-    salesReportFilter 
+    // salesReportPost,
+    salesReportFilter,
+    adminDashboard 
    
 
 
