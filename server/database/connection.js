@@ -3,7 +3,7 @@ const mongoose=require('mongoose');
 const connectDB=async()=>{
     try {
         const con= await mongoose.connect(process.env.MONGO_URL, { dbName: 'ash' })
-        // console.log(`Mongo connected: ${con.connection.hos}`)
+        console.log(`Mongo connected: ${con.connection.host}`)
     } catch (error) {
        console.log(error)
        process.exit(1) 
