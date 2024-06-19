@@ -623,9 +623,10 @@ const invoiceDownload = async (req, res) => {
       const ejsData = ejs.render(html, data);
       console.log("777777777777777777777777777777777777777777777777777777777");
   
+      const executablePath = process.env.EXECUTABLEPATH || 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe'
       const browser = await puppeteer.launch({
         headless: true,
-        executablePath: 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe'
+        executablePath: executablePath
       });
       
       
