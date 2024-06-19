@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Order Details</title>
@@ -155,10 +156,16 @@
 
 <td>
     <% if (orderDetails.status === 'Delivered') { %>
+        
         <a href="#" class="return-button btn btn-primary" data-toggle="modal" data-target="#returnModal" data-id="<%= orderDetails._id %>" data-status="Return">Return</a>
+        <a href="/invoice?orderId=<%=orderDetails._id%>" class="download-invoice-button btn btn-secondary" data-id="<%= orderDetails._id %>" data-status="Download Invoice">Download Invoice</a>
     <% } else if (orderDetails.status === 'processing' || orderDetails.status === 'placed' || orderDetails.status === 'pending') { %>
         <a href="#" class="cancel-button btn btn-danger" data-id="<%= orderDetails._id %>" data-status="Cancel">Cancel</a>
     <% } %>
+    <% if (orderDetails.status === 'pending') { %>
+        <input type="hidden" id="hiddenData" value="<%=orderDetails._id%>">
+        <a href="#" class="pay-button btn btn-success" id="placeOrderButton" data-id="<%= orderDetails._id %>" onclick="paylater('<%= orderDetails._id%>','<%= orderDetails.subtotal %>')" data-status="Pay">Pay</a>
+      <% } %>
 </td>
 
 <!-- Modal -->
@@ -179,6 +186,7 @@
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
                 <button type="button" id="submitReturn" class="btn btn-primary">Submit</button>
             </div>
+
         </div>
     </div>
 </div>
@@ -277,7 +285,112 @@
     });
 </script>
 
+<script>
+    function paylater(orderId, totalAmount) {
+      const data = { orderId, totalAmount };
+      console.log("1111111111111111111111111111",orderId);
+        
+      console.log(data, "the data in paylater");
+  
+      fetch("/payOrder", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Order placement failed");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        if (data.success) {
+          console.log("Order data received, initializing Razorpay payment");
+          razorpayPayment(data.orders, orderId);
+        } else {
+          console.error("Order placement was not successful");
+        }
+      })
+      .catch((error) => {
+        console.error("Error during order placement:", error);
+      });
 
+      function razorpayPayment(orders, orderId) {
+        console.log("222222222222222222222222222222222",orderId);
+        console.log("Initializing Razorpay with order data:", orders);
+        var options = {
+          key: "rzp_test_CYFq5WzXxbZckl",
+          amount: orders.amount,
+          currency: "INR",
+          name: "Acme Corp", // your business name
+          description: "Test Transaction",
+          image: "https://example.com/your_logo",
+          order_id: orders.id,
+          handler: function (response) {
+            console.log("Razorpay payment completed, verifying payment:", response);
+            verifyPayment(response, orders, orderId);
+          },
+          prefill: {
+            name: "Gaurav Kumar",
+            email: "gaurav.kumar@example.com",
+            contact: "9000090000",
+          },
+          notes: {
+            address: "Razorpay Corporate Office",
+          },
+          theme: {
+            color: "#696a6e",
+          },
+        };
+        var rzp1 = new Razorpay(options);
+        rzp1.open();
+      }
+  
+      function verifyPayment(payment, orders, orderId) {
+        console.log("44444444444444444444444444",orderId);
+        console.log("Verifying payment with data:", { payment, orders, orderId });
+  
+        fetch("/verifypayment", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            payment: payment,
+            orders: orders,
+            orderId: orderId,
+          }),
+        })
+        .then(response => response.json())
+        .then(response => {
+          console.log("Fetch success response:", response);
+          if (response.success) {
+            console.log("Payment verification successful, redirecting to /orderPlaced");
+            window.location.href = `/orderPlaced`;
+          } else if (response.onlineSuccess) {
+            Swal.fire({
+              icon: "error",
+              title: "Payment has been completed",
+              showConfirmButton: false,
+              timer: 1500,
+            });
+          } else {
+            console.error("Payment verification failed:", response);
+          }
+        })
+        .catch(error => {
+          console.error("Fetch error during payment verification:", error);
+        });
+      }
+    }
+  </script>
+  
+  
+  
+  
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <!-- Modal -->
 <div class="modal fade" id="returnModal" tabindex="-1" role="dialog" aria-labelledby="returnModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">

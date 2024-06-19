@@ -47,17 +47,18 @@ const deleteOffer = async(req,res)=>{
 
 const productOffer = async(req,res)=>{
     try {
-        const { productId, discountPercentage } = req.body;
+        const { productId, offerId } = req.body;
+        console.log("product offer apply",offerId);
 
         // Validate the input
-        if (!productId || !discountPercentage) {
-            return res.status(400).json({ message: 'Product ID and discount percentage are required.' });
+        if (!productId ) {
+            return res.status(400).json({ message: 'Product ID may  required.' });
         }
 
         // Find the product by ID and update the productoffer field
-        const product = await Product.findByIdAndUpdate(
-            productId,
-            { productoffer: discountPercentage,is_offerapply: true },
+        const product = await Product.findOneAndUpdate(
+            {_id:productId},
+            { offers:offerId },
             { new: true }
         );
 
@@ -108,17 +109,20 @@ const applyCategoryOffer = async (req, res) => {
         }
 
         // Update the category with the new discount
-        const Category = await category.findByIdAndUpdate(
-            categoryId,
-            { categoryoffer: discount,is_offerapply: true },
+        // const Category = await category.findByIdAndUpdate(
+        //     categoryId,
+        //     { categoryoffer: discount,is_offerapply: true },
+        //     { new: true }
+        // );
+        const Category= await category.findOneAndUpdate({_id:categoryId},{offers:offerId},
             { new: true }
-        );
+        )
 
         if (!category) {
             return res.status(404).json({ message: 'Category not found.' });
         }
 
-        console.log("Category updated:", category); // Log the updated category
+        console.log("Category updated:", Category); // Log the updated category
         res.status(200).json({ message: 'Category offer updated successfully.', Category });
     } catch (error) {
         console.error('Error updating category offer:', error.message);
@@ -129,7 +133,9 @@ const applyCategoryOffer = async (req, res) => {
 const removeCategoryOffer = async (req, res) => {
     try {
         console.log('111111111111111111111111111111111111111111111111111111111');
-        const { categoryId } = req.body;
+        const { categoryId,offerId } = req.body;
+        console.log(offerId,"may here");
+
 
         // Validate the input
         if (!categoryId) {
@@ -139,7 +145,7 @@ const removeCategoryOffer = async (req, res) => {
         // Update the category to remove the offer
         const Category = await category.findByIdAndUpdate(
             categoryId,
-            { categoryoffer: 0, is_offerapply: false },
+            { $pull:{offers:offerId} },
             { new: true }
         );
 
@@ -156,7 +162,8 @@ const removeCategoryOffer = async (req, res) => {
 
 const removeProductOffer = async (req, res) => {
     try {
-        const { productId } = req.body;
+        const { productId,offerId } = req.body;
+        console.log(offerId,"offerid from product");
 
         // Validate the input
         if (!productId) {
@@ -164,9 +171,9 @@ const removeProductOffer = async (req, res) => {
         }
 
         // Update the product to remove the offer
-        const product = await Product.findByIdAndUpdate(
-            productId,
-            { productoffer: 0, is_offerapply: false },
+        const product = await Product.findOneAndUpdate(
+            {_id:productId},
+            { $pull:{offers:offerId} },
             { new: true }
         );
 

@@ -41,8 +41,11 @@ const orderView = async (req, res) => {
 
 
 
+
+
 module.exports={
     loadpayment,
     orderDetails,
-    orderView
+    orderView,
+     
 }

@@ -236,12 +236,15 @@
                                             <%}%>
                                             <td>
                                                 <div class="calculate-discount-btn btn-hover">
-                                                    <% if(Category[i].is_offerapply) { %>
-                                                        <button class="remove-offer-btn" onclick="removeOffer('<%= Category[i]._id %>')">Remove Offer</button>
+                                                    <% if(Category[i].offers.length > 0) { %>
+                                                        <% Category[i].offers.forEach(function(offer) { %>
+                                                            <button class="remove-offer-btn" data-offer-id="<%= offer._id %>" onclick="removeOffer('<%= Category[i]._id %>', '<%= offer._id %>')">Remove Offer</button>
+                                                        <% }); %>
                                                     <% } else { %>
                                                         <a class="btn theme-color" href="/applyoffer?id=<%= Category[i]._id %>">Apply Offer</a>
                                                     <% } %>
                                                 </div>
+                                                
                                             </td>
                             
                                             
@@ -274,14 +277,16 @@
         </main>
 
         <script>
-            async function removeOffer(categoryId) {
+            async function removeOffer(categoryId,offerId) {
+                console.log(offerId);
                 try {
+
                     const response = await fetch('/removeoffer', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
                         },
-                        body: JSON.stringify({ categoryId })
+                        body: JSON.stringify({ categoryId,offerId })
                     });
     
                     const result = await response.json();

@@ -785,21 +785,21 @@ const salesReportFilter = async (req, res) => {
     } catch (error) {
         console.error("Error filtering sales report: ", error.message);
         res.status(500).send("Internal Server Error");
-    }
+    } 
 };
-
 const adminDashboard = async(req,res)=>{
     try {
         const userDashboard = await Users.countDocuments();
         const productDashboard = await product.countDocuments();
         const categoryDashboard = await category.countDocuments();
         const orderDashboard = await Order.countDocuments();
-        const categoryList = await category.find({is_Listed:true});
-        const productList = await product.find({is_Listed:true});
-        const orderlist = await Order.find({status:"Delivered"});
+        const categoryList = await category.find({is_Listed:true}).count();
+        const productList = await product.find({is_Listed:true}).count();
+        const orderlist = await Order.find({status:"Delivered"}).count();
         const salesStatus = await Order.find({status:"Delivered"})
         .sort({date:-1})
         .limit(3)
+        console.log(productList,"coubt");
         const weeklysale = await Order.aggregate([
             {
                 $match:{
@@ -814,6 +814,7 @@ const adminDashboard = async(req,res)=>{
             (sum,order)=>sum+order.subtotal,
             0
         )
+        console.log("weekly earnings",weeklyearnings);
         const monthlysale = await Order.aggregate([
             {
                 $match:{
@@ -825,7 +826,7 @@ const adminDashboard = async(req,res)=>{
             {
                 $group:{
                     _id:{$month:"$date"},
-                    suntotal:{$sum:"$subtotal"},
+                    subtotal:{$sum:"$subtotal"},
                 },
             },
         ]);
@@ -833,6 +834,7 @@ const adminDashboard = async(req,res)=>{
             (sum,order)=>sum+order.subtotal,
             0
         )
+        console.log("monthly earnings",monthlyearnings);
         const monthlyUserData = await Users.aggregate([
             {
                 $match:{
@@ -874,23 +876,113 @@ const adminDashboard = async(req,res)=>{
             (sum,order)=>sum+order.subtotal,
             0
         )
+        console.log("ytiyti",yearlyearnings);
         
-        res.render('index',{
-            weeklysale,
-            weeklyearnings,
-            monthlysale,
-            monthlyearnings,
-            monthlyUserData,
-            monthlyOrderData,
-            yearlysale,
-            yearlyearnings
+        const topproduct = await Order.aggregate([
+            { $unwind: "$product" },
+            {
+                $group: {
+                    _id: "$product.product_id",
+                    name: { $first: "$product.name" },
+                    category: { $first: "$product.category" },
+                    count: { $sum: 1 },
+                },
+            },
+            {
+                $lookup: {
+                    from: "products",
+                    localField: "_id",
+                    foreignField: "_id",
+                    as: "productDetails"
+                }
+            },
+            {
+                $lookup: {
+                    from: "categories",
+                    localField: "productDetails.category",
+                    foreignField: "_id",
+                    as: "categoryDetails"
+                }
+            },
+            {
+                $project: {
+                    _id: 1,
+                    name: 1,
+                    count: 1,
+                    category: { $arrayElemAt: ["$categoryDetails.name", 0] } // Project category name
+                }
+            },
+            { $sort: { count: -1 } }
+        ]);
+        
+        console.log("hgkgkgkhk", topproduct )
+        const topCategory = await Order.aggregate([
+            { $unwind: "$product" },
+            {
+                $group: {
+                    _id: "$product.category",
+                    count: { $sum: 1 },
+                },
+            },
+            {
+                $lookup: {
+                    from: "categories",
+                    localField: "_id",
+                    foreignField: "_id",
+                    as: "categoryDetails"
+                }
+            },
+            {
+                $project: {
+                    _id: 1,
+                    name: { $first: "$categoryDetails.name" }, // Use $first to extract the category name
+                    count: 1,
+                }
+            },
+            { $sort: { count: -1 } },
+        ]);
+        
+        console.log("Top Categories with Names", topCategory);
+        
+        
+        
+        console.log("Top Categories with Names1111111111111111111111111111111111111", topCategory);
+        
 
+
+        const totalRevenue = await Order.aggregate([
+            {
+              $match:{status:{$eq:"Delivered"}}
+            },
+            {$group:{
+              _id:null,
+              revenue:{$sum:"$subtotal"}
+            }}
+          ])
+          const totalrevenue =  totalRevenue[0].revenue
+
+       
+        console.log(totalRevenue,"tii total revenue");
+        res.render('index',{
+            weeklyearnings: weeklyearnings,
+            monthlyearnings: monthlyearnings,
+            yearlyearnings: yearlyearnings,
+            productList,
+            categoryList,
+            totalrevenue,
+            orderlist,
+            topproduct,
+            topCategory
+         
         })
         
     } catch (error) {
         console.log(error.message);
     }
 }
+
+
+
 
 
 

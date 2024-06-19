@@ -59,7 +59,7 @@ const orderSchema = new mongoose.Schema({
                 default:1,
             },
             category:{
-                type:String,
+                type: mongoose.Schema.Types.ObjectId, 
                 required:true
             },
             total:{

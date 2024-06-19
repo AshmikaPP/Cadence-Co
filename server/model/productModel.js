@@ -32,10 +32,14 @@ const productSchema = new mongoose.Schema({
          type:Number,
          default:0
     },
-    is_offerapply:{
-       type:Boolean,
-       default:false
-    },
+    // is_offerapply:{
+    //    type:Boolean,
+    //    default:false
+    // },
+    offers: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'offers', 
+      }],
         image:[{
             type:String,
             required:true

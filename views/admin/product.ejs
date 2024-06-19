@@ -230,20 +230,24 @@
                                                 <a href="#" class="delete-product" data-id="<%= Product[i]._id %>">Delete</a>
                                             </td>
                                             <td><a href="/editproduct?id=<%= Product[i]._id %>">Edit</a></td>
-                                            <% if(Product[i].is_Listed == true) { %>
+                                            <% if(Product[i].offers.length > 0) { %>
                                                 <td><a href="/Unlistproduct?id=<%= Product[i]._id %>">Unlist</a></td>
                                             <% } else { %>
                                                 <td><a href="/listproduct?id=<%= Product[i]._id %>">List</a></td>
                                             <% } %>
                                             <td>
                                                 <div class="calculate-discount-btn btn-hover">
-                                                    <% if(Product[i].is_offerapply) { %>
+                                                    <% if(Product[i].offers.length > 0) { %>
                                                         <!-- If offer is applied, show Remove Offer button -->
-                                                        <button class="remove-offer-btn" onclick="confirmRemoveOffer('<%= Product[i]._id %>')">Remove Offer</button>
-                                                    <% } else { %>
+                                                        <% Product[i].offers.forEach(function(offer) { %>
+                                                            <% console.log( offer._id,"abin thendi") %>
+
+                                                            <button class="remove-offer-btn" onclick="confirmRemoveOffer('<%= Product[i]._id %>', '<%= offer._id %>')">Remove Offer</button>
+                                                        <% }); %>                                                       
+                                                         <% } else { %>
                                                         <!-- If offer is not applied, show Apply Offer button -->
-                                                        <a class="btn theme-color apply-offer-btn" href="#" data-bs-toggle="modal" data-bs-target="#couponModal" data-product-id="<%= Product[i]._id %>">Apply Offer</a>
-                                                    <% } %>
+                                                        <a class="btn theme-color apply-offer-btn" href="#" data-bs-toggle="modal" data-bs-target="#couponModal" data-product-id="<%= Product[i]._id %>" data-offer-id="<%= offers._id %>">Apply Offer</a>
+                                                        <% } %>
                                                 </div>
                                             </td>
                                         </tr>
@@ -334,101 +338,106 @@
             
 
         <<script>
-        // Assuming offers data is available as a global variable or passed from the server
-        const offers = [
-            <% offers.forEach(offer => { %>
-                {
-                    id: '<%= offer._id %>',
-                    name: '<%= offer.name %>',
-                    discount: '<%= offer.discount %>',
-                    activationdate: '<%= offer.activationdate.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: '2-digit' }).replace(/\//g, '-') %>',
-                    expireddate: '<%= offer.expireddate.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: '2-digit' }).replace(/\//g, '-') %>'
-                },
-            <% }); %>
-        ];
-
-          // Store the selected product ID when the modal is opened
-          let selectedProductId;
-
-document.querySelectorAll('.apply-offer-btn').forEach(button => {
-    button.addEventListener('click', function() {
-        selectedProductId = this.getAttribute('data-product-id');
-        populateOffersModal();
-    });
-});
-
-function populateOffersModal() {
-    const offersTableBody = document.getElementById('offersTableBody');
-    offersTableBody.innerHTML = ''; // Clear existing offers
-    offers.forEach(offer => {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-            <td>
-                <input type="radio" name="selectedOffer" value="${offer.discount}">
-            </td>
-            <td>${offer.name}</td>
-            <td>${offer.discount}</td>
-            <td>${offer.activationdate}</td>
-            <td>${offer.expireddate}</td>
-        `;
-        offersTableBody.appendChild(row);
-    });
-}
-
-document.getElementById('applySelectedCoupon').addEventListener('click', function(event) {
-    event.preventDefault();
-    
-    // Get the selected radio button
-    const selectedOffer = document.querySelector('input[name="selectedOffer"]:checked');
-    
-    if (selectedOffer && selectedProductId) {
-        // Get the discount percentage from the selected offer
-        const discountPercentage = selectedOffer.value;
-        const route = '/productoffer';
-        const data = {
-            productId: selectedProductId,
-            discountPercentage: discountPercentage
-        };
-        fetch(route, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(data)
-        })
-        .then(response => response.json())
-        .then(data => {
-    console.log('Success:', data);
-    Swal.fire({
-                    icon: 'success',
-                    title: 'Success',
-                    text: 'Product offer applied successfully!',
-                    showConfirmButton: true,
-                }).then(() => {
-                    location.reload(true); 
+            // Assuming offers data is available as a global variable or passed from the server
+            const offers = [
+                <% offers.forEach(offer => { %>
+                    {
+                        id: '<%= offer._id %>',
+                        name: '<%= offer.name %>',
+                        discount: '<%= offer.discount %>',
+                        activationdate: '<%= offer.activationdate.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: '2-digit' }).replace(/\//g, '-') %>',
+                        expireddate: '<%= offer.expireddate.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: '2-digit' }).replace(/\//g, '-') %>'
+                    },
+                <% }); %>
+            ];
+        
+            // Store the selected product and offer IDs when the modal is opened
+            let selectedProductId;
+            let selectedOfferId;
+        
+            document.querySelectorAll('.apply-offer-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    selectedProductId = this.getAttribute('data-product-id');
+                    selectedOfferId = this.getAttribute('data-offer-id');
+                    populateOffersModal();
                 });
-})
-
-        .catch(error => {
-            console.error('Error:', error);
-        });
-    } else {
-        console.log('No offer selected or product ID missing.');
-    }
-});
-</script>
+            });
+        
+            function populateOffersModal() {
+                const offersTableBody = document.getElementById('offersTableBody');
+                offersTableBody.innerHTML = ''; // Clear existing offers
+                offers.forEach(offer => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>
+                            <input type="radio" name="selectedOffer" value="${offer.id}">
+                        </td>
+                        <td>${offer.name}</td>
+                        <td>${offer.discount}</td>
+                        <td>${offer.activationdate}</td>
+                        <td>${offer.expireddate}</td>
+                    `;
+                    offersTableBody.appendChild(row);
+                });
+            }
+        
+            document.getElementById('applySelectedCoupon').addEventListener('click', function(event) {
+                event.preventDefault();
+                
+                // Get the selected radio button
+                const selectedOfferRadio = document.querySelector('input[name="selectedOffer"]:checked');
+                
+                if (selectedOfferRadio && selectedProductId) {
+                    // Get the selected offer ID from the radio button value
+                    selectedOfferId = selectedOfferRadio.value;
+                    
+                    // Send the request to apply the offer
+                    const route = '/productoffer';
+                    const data = {
+                        productId: selectedProductId,
+                        offerId: selectedOfferId
+                    };
+                    fetch(route, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(data)
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log('Success:', data);
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success',
+                            text: 'Product offer applied successfully!',
+                            showConfirmButton: true,
+                        }).then(() => {
+                            location.reload(true); 
+                        });
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                    });
+                } else {
+                    console.log('No offer selected or product ID missing.');
+                }
+            });
+        </script>
+        
 
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        async function removeOffer(productId) {
+        async function removeOffer(productId,offerId) {
+            console.log(offerId,"offerId ");
             try {
                 const response = await fetch('/removeproductoffer', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ productId })
+                    body: JSON.stringify({ productId ,offerId})
                 });
 
                 const result = await response.json();
@@ -457,7 +466,7 @@ document.getElementById('applySelectedCoupon').addEventListener('click', functio
             }
         }
 
-        function confirmRemoveOffer(productId) {
+        function confirmRemoveOffer(productId,offerId) {
             Swal.fire({
                 title: 'Are you sure?',
                 text: "You won't be able to revert this!",
@@ -468,7 +477,7 @@ document.getElementById('applySelectedCoupon').addEventListener('click', functio
                 confirmButtonText: 'Yes, remove it!'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    removeOffer(productId);
+                    removeOffer(productId,offerId);
                 }
             });
         }

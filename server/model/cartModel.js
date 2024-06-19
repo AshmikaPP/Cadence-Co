@@ -39,7 +39,16 @@ const cartSchema = new mongoose.Schema({
     subtotal:{
         type:Number,
         default:true
-    }
+    },
+    shippingcharge:{
+       type:Number,
+       default:0
+    },
+    coupondiscount:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"Coupon",
+        default:null
+      },
 
 })
 module.exports = mongoose.model('Cart',cartSchema);

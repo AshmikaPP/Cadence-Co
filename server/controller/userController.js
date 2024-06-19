@@ -11,6 +11,12 @@ const userModel = require('../model/userModel');
 const randomstring = require("randomstring");
 const Order = require('../model/orderModel')
 const {generateReferralCode} = require('../utilis/refreal')
+const fs = require('fs')
+const path = require('path')
+const ejs = require("ejs");
+const puppeteer = require("puppeteer-core")
+const pt = require('puppeteer');
+const productModel = require('../model/productModel');
 
 
 
@@ -35,11 +41,13 @@ const securePassword = async (password) => {
 
 const home = async (req, res) => {
     try {
+        
+        let products = await product.find()
+   
       
-        const products = await product.find().populate('category');
+       
         if (req.session.UserId) {
-            const user = await userModel.findOne({_id:req.session.UserId});
-
+            const user = await userModel.findOne({ _id: req.session.UserId });
             res.render('home', { products, user });
         } else {
             res.render('home', { products });
@@ -49,6 +57,7 @@ const home = async (req, res) => {
         res.status(500).send('Internal server error');
     }
 };
+
 
 const afterlogin = async (req,res)=>{
     try {
@@ -114,11 +123,14 @@ const LoadShop = async (req, res) => {
         const skip = (currentPage - 1) * pageSize;
         
         const products = await product.find(query)
-            .populate('category')
-            .sort(sortOption)
-            .skip(skip)
-            .limit(pageSize);
-  
+        .populate({
+            path: 'category.offers', // Populate the 'offers' field within the 'category' subdocument
+        })
+        .populate('offers') // Populate the 'offers' field directly in the product document
+        .sort(sortOption)
+        .skip(skip)
+        .limit(pageSize);
+
         res.render('shop', { products, CategoryData, searchQuery, currentPage, totalPages });
     } catch (error) {
         console.log(error);
@@ -578,6 +590,69 @@ const changeOrderstatus = async(req,res)=>{
     }
 }
 
+const invoiceDownload = async (req, res) => {
+    console.log("11111111111111122222222222222222222222222222223333333333333333333333");
+
+    try {
+      const orderId = req.query.orderId;
+      console.log("Order ID:", orderId);
+  
+      const order = await Order.findOne({ _id: orderId }).populate({
+        path: "product.product_id",
+        model: "product",
+      }).populate("user");
+      console.log("Order:", order);
+  
+      if (!order) {
+        throw new Error('Order not found');
+      }
+  
+      const date = new Date();
+      const data = {
+        order: order,
+        date,
+      };
+      console.log("222222222222222222222222222222222222222222222Data for EJS:", data);
+  
+      const filepathName = path.join(__dirname, "../../views/users/invoice.ejs");
+      
+      console.log("File path:", filepathName); 
+      console.log("333333333333333333333333333333333333333333333333333333333");
+  
+      const html = fs.readFileSync(filepathName).toString();
+      const ejsData = ejs.render(html, data);
+      console.log("777777777777777777777777777777777777777777777777777777777");
+  
+      const browser = await puppeteer.launch({
+        headless: true,
+        executablePath: 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe'
+      });
+      
+      
+      console.log("333333333333333333333333333333333333333333333333333333333");
+      const page = await browser.newPage();
+      await page.setContent(ejsData, { waitUntil: "networkidle0" });
+      console.log("444444444444444444444444444444444444444444")
+
+      const pdfBytes = await page.pdf({ format: "Letter" });
+      await browser.close();
+  
+      res.setHeader("Content-Type", "application/pdf");
+      res.setHeader(
+        "Content-Disposition",
+        "attachment; filename=orderInvoice_WATCH.pdf"
+      );
+      res.send(pdfBytes);
+      console.log("11111111111111111111111111111111111111invoice downloaded");
+    } catch (error) {
+      console.error('Error generating invoice:', error.message);
+      console.error('Error stack trace:', error.stack);
+      res.status(500).send('Error generating invoice');
+    }
+};
+
+  
+
 
 
 
@@ -603,5 +678,6 @@ module.exports = {
     tokenGenarator,
     verifyEmail,
     changeOrderstatus,
+    invoiceDownload
 
 }

@@ -92,10 +92,18 @@ user_route.get('/remove',cartController.removeWishlist)
 // user_route.post('/addaddress',cartController.checkoutaddaddress)
 
 user_route.post('/checkoutaddaddress',cartController.checkoutaddaddress)
+
 user_route.get('/loadcheckouteditaddress',cartController.loadcheckouteditaddress)
+
 user_route.post('/checkouteditaddress',cartController.checkoutEditaddress)
+
 user_route.post('/changeOrderstatus',userController.changeOrderstatus)
+
 user_route.post('/verifypayment',cartController.verifyPayment)
+
+user_route.get('/invoice',userController.invoiceDownload)
+
+user_route.post('/payOrder',cartController.payOrder)
 
 
 

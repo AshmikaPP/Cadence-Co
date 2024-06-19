@@ -72,7 +72,7 @@ const upload = multer({storage:storage,array:'image'});
 
 
 admin_route.get('/admin/login',Auth.isLogin,adminController.loadLogin)
-admin_route.get('/dashboard',Auth.isLogout,adminController.Dashboard)
+// admin_route.get('/dashboard',Auth.isLogout,adminController.Dashboard)
 
 admin_route.post('/loginpage',adminController.verifyLogin)
 

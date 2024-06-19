@@ -6,7 +6,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <title>Urdan - Minimal eCommerce HTML Template</title>
+    <title>Wristaura - Watches</title>
     <meta name="robots" content="noindex, follow" />
     <meta name="description" content="Urdan Minimal eCommerce Bootstrap 5 Template is a stunning eCommerce website template that is the best choice for any online store.">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -103,7 +103,7 @@
                     <div class="row align-items-center">
                         <div class="col-lg-3 col-md-6 col-6">
                             <div class="logo">
-                                <a href="index.html"><img src="assets/images/logo/logo.png" alt="logo"></a>
+                                <a href="index.html"><img src="assets/images/logo/watch.png" alt="logo"></a>
                             </div>
                         </div>
                         <div class="col-lg-6 d-none d-lg-block d-flex justify-content-center">
@@ -117,31 +117,8 @@
                                             <ul class="mega-menu-style mega-menu-mrg-1">
                                                 <li>
                                                     <ul>
-                                                        <li>
-                                                            <a class="dropdown-title" href="#">Shop Layout</a>
-                                                            <ul>
-                                                                <li><a href="shop.html">standard style</a></li>
-                                                                <li><a href="shop-sidebar.html">shop grid sidebar</a></li>
-                                                                <li><a href="shop-list.html">shop list style</a></li>
-                                                                <li><a href="shop-list-sidebar.html">shop list sidebar</a></li>
-                                                                <li><a href="shop-right-sidebar.html">shop right sidebar</a></li>
-                                                                <li><a href="shop-location.html">store location</a></li>
-                                                            </ul>
-                                                        </li>
-                                                        <li>
-                                                            <a class="dropdown-title" href="#">Products Layout</a>
-                                                            <ul>
-                                                                <li><a href="product-details.html">tab style 1</a></li>
-                                                                <li><a href="product-details-2.html">tab style 2</a></li>
-                                                                <li><a href="product-details-gallery.html">gallery style </a></li>
-                                                                <li><a href="product-details-affiliate.html">affiliate style</a></li>
-                                                                <li><a href="product-details-group.html">group style</a></li>
-                                                                <li><a href="product-details-fixed-img.html">fixed image style </a></li>
-                                                            </ul>
-                                                        </li>
-                                                        <li>
-                                                            <a href="shop.html"><img src="assets/images/banner/menu.png" alt=""></a>
-                                                        </li>
+                                                        
+                                                        
                                                         
                                                     </ul>
                                                 </li>
@@ -198,7 +175,7 @@
                                     <a title="Login Register" href="/register"><i class="pe-7s-user"></i></a>
                                 </div>
                                 <div class="header-action-style">
-                                    <a title="Wishlist" href="wishlist.html"><i class="pe-7s-like"></i></a>
+                                    <a title="Wishlist" href="/wishlist"><i class="pe-7s-like"></i></a>
                                 </div>
                                 <div class="header-action-style header-action-cart">
                                     <a class="cart-active" href="#"><i class="pe-7s-shopbag"></i>
@@ -242,7 +219,7 @@
                                             <h3 class="animated">new arrival</h3>
                                             <h1 class="animated">Summer <br>Collection</h1>
                                             <div class="slider-btn btn-hover">
-                                                <a href="product-details.html" class="btn animated">
+                                                <a href="/shop" class="btn animated">
                                                     Shop Now <i class=" ti-arrow-right "></i>
                                                 </a>
                                             </div>
@@ -252,7 +229,6 @@
                                         <div class="hero-slider-img-1 slider-animated-1" style="width: 400px;">
                                             <img class="animated animated-slider-img-1" src="assets/images/slider/home 1.png" height="600px"  style="margin-left: 100px;"  alt="">
                                             <div class="product-offer animated" style="margin-top: 100px; margin-left: 100px;">
-                                                <h5>30% <span>Off</span></h5>
                                             </div>
                                         </div>
                                     </div>
@@ -269,7 +245,7 @@
                                             <h3 class="animated">new arrival</h3>
                                             <h1 class="animated">Summer <br>Collection</h1>
                                             <div class="slider-btn btn-hover">
-                                                <a href="product-details.html" class="btn animated">
+                                                <a href="/shop" class="btn animated">
                                                     Shop Now <i class=" ti-arrow-right "></i>
                                                 </a>
                                             </div>
@@ -277,9 +253,7 @@
                                     </div>
                                     <div class="col-lg-6 col-md-6">
                                         <div class="hero-slider-img-1 slider-animated-1">
-                                            <img class="animated animated-slider-img-1" src="assets/images/slider/slider-img-1-2.png" alt="">
                                             <div class="product-offer animated">
-                                                <h5>30% <span>Off</span></h5>
                                             </div>
                                         </div>
                                     </div>
@@ -308,13 +282,13 @@
                 </div>
                 <div class="product-slider-active-1 swiper-container">
                     <div class="swiper-wrapper">
-                        <% for (let i = 0; i < products.length; i++) { %>
+                        <% products.forEach(function(product) { %>
                             <div class="swiper-slide">
                                 <div class="product-wrap" data-aos="fade-up" data-aos-delay="200">
                                     <div class="product-img img-zoom mb-25">
                                         <a href="product-details.html">
-                                            <% if (products[i].image && products[i].image.length > 0) { %>
-                                                <img src="/uploads/product/<%= products[i].image[0] %>" height="300px" alt="">
+                                            <% if (product.image && product.image.length > 0) { %>
+                                                <img src="/uploads/product/<%= product.image[0] %>" height="300px" alt="">
                                             <% } else { %>
                                                 <!-- Provide a placeholder image if product image is not available -->
                                                 <img src="/placeholder-image.jpg" height="300px" alt="Placeholder Image">
@@ -323,62 +297,49 @@
                                         <div class="product-badge badge-top badge-right badge-pink">
                                             <!-- Add product badges here if needed -->
                                         </div>
-                                        <div class="product-action-wrap">
-                                            <!-- Add product action buttons here -->
-                                            <button class="product-action-btn-1" title="Wishlist"><i class="pe-7s-like"></i></button>
-                                            <button class="product-action-btn-1" title="Quick View" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                                                <i class="pe-7s-look"></i>
-                                            </button>
-                                        </div>
-                                        <div class="product-action-2-wrap">
-                                            <!-- Add product action buttons here -->
-                                            <button class="product-action-btn-2" title="Add To Cart"><i class="pe-7s-cart"></i> Add to cart</button>
-                                        </div>
                                     </div>
                                     <div class="product-content">
-                                        <h3><a href="product-details.html"><%= products[i].name %></a></h3>
-                                        <% if (products[i].category.categoryoffer != 0 || products[i].productoffer != 0) { %>
-                                            <% if (products[i].category.categoryoffer > products[i].productoffer) { %>
+                                        <h3><a href="product-details.html"><%= product.name %></a></h3>
+                                        <% if (product.category.categoryoffer != 0 || product.productoffer != 0) { %>
+                                            <% if (product.category.categoryoffer > product.productoffer) { %>
                                                 <!-- Display product price with category offer -->
-                                                <% var discountPercentage = products[i].category.categoryoffer; %>
-                                                <% var discountedPrice = products[i].price * (1 - (discountPercentage / 100)); %>
+                                                <% var discountPercentage = product.category.categoryoffer; %>
+                                                <% var discountedPrice = product.price * (1 - (discountPercentage / 100)); %>
                                                 <div class="product-price">
-                                                    <span class="original-price">$<%= products[i].price.toFixed(2) %></span>
-                                                    <span class="new-price">$<%= discountedPrice.toFixed(2) %></span>
+                                                    <span class="original-price">₹ <%= product.price.toFixed(2) %></span>
+                                                    <span class="new-price">₹ <%= discountedPrice.toFixed(2) %></span>
                                                     <span class="discount-percentage"><%= discountPercentage %>% </span>
                                                 </div>
                                             <% } else { %>
                                                 <!-- Display product price with product offer -->
-                                                <% var discountPercentage = products[i].productoffer; %>
-                                                <% var discountedPrice = products[i].price * (1 - (discountPercentage / 100)); %>
+                                                <% var discountPercentage = product.productoffer %>
+                                                <% var discountedPrice = product.price * (1 - (discountPercentage / 100)); %>
+                                                
                                                 <div class="product-price">
-                                                    <del><span class="original-price">₹<%= products[i].price.toFixed(2) %></span></del>
-                                                    <span class="new-price">₹<%= discountedPrice.toFixed(2) %></span>
-                                                    <span class="discount-percentage"><%= discountPercentage %>% </span>
+                                                
+                                                    <% if (discountPercentage!=0){%>
+                                                        <del><span class="original-price">₹ <%= product.price.toFixed(2) %></span></del>
+                                                        <span class="new-price">₹ <%= discountedPrice.toFixed(2) %></span>
+                                                        <span class="discount-percentage"><%= discountPercentage %>% </span>
+                                                        <%}else{%>
+                                                    <span class="new-price">₹ <%= discountedPrice.toFixed(2) %></span>
+                                                 
+                                                       <% }%>
                                                 </div>
                                             <% } %>
                                         <% } else { %>
                                             <!-- Display regular product price if no offer -->
                                             <div class="product-price">
-                                                <span class="new-price">₹<%= products[i].price.toFixed(2) %></span>
+                                                <span class="new-price">₹ <%= product.price.toFixed(2) %></span>
                                             </div>
                                         <% } %>
                                     </div>
-                                    
-                                    
-                                    
-                                    
-                                    
-                                    
-                                    
-                                    
                                 </div>
                             </div>
-                        <% } %>
+                        <% }); %>
                     </div>
                 </div>
                 
-        </div>
         
        
         
